@@ -56,11 +56,12 @@
                     <h3 class="text-3xl font-semibold mt-2">178</h3>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl border border-pink-200 shadow-sm hover:shadow-md transition">
-                    <p class="text-sm text-gray-500">Revenue</p>
-                    <h3 class="text-3xl font-semibold text-pink-600 mt-2">Rp 12.450.000</h3>
-                </div>
-
+              <div class="bg-white p-6 rounded-xl border border-pink-200 shadow-sm hover:shadow-md transition">
+                    <p class="text-sm text-gray-500 mb-1">Revenue</p>
+                    <h3 class="text-3xl font-semibold text-pink-600 leading-tight">
+                       Rp. 12.450.000
+                    </h3>
+            </div>
                 <div class="bg-white p-6 rounded-xl border border-pink-200 shadow-sm hover:shadow-md transition">
                     <p class="text-sm text-gray-500">Products</p>
                     <h3 class="text-3xl font-semibold mt-2">42</h3>
