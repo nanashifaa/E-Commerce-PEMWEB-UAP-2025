@@ -17,4 +17,34 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware(['access:buyer|customer'])->group(function () {
+
+    Route::get('/checkout', [CheckoutController::class, 'index']);
+    Route::get('/history', [HistoryController::class, 'index']);
+    Route::get('/wallet/topup', [WalletController::class, 'topup']);
+
+});
+
+Route::middleware(['access:seller'])->group(function () {
+
+    Route::get('/store/register', [StoreController::class, 'create']);
+    Route::get('/seller/profile', [SellerProfileController::class, 'index']);
+    Route::get('/seller/categories', [CategoryController::class, 'index']);
+    Route::get('/seller/products', [ProductController::class, 'index']);
+    Route::get('/seller/orders', [OrderController::class, 'index']);
+    Route::get('/seller/withdrawals', [WithdrawalController::class, 'index']);
+    Route::get('/seller/balance', [BalanceController::class, 'index']);
+
+});
+
+Route::middleware(['access:admin'])->group(function () {
+
+    Route::get('/admin/verification', [VerificationController::class, 'index']);
+    Route::post('/admin/verification/approve/{store}', [VerificationController::class, 'approve']);
+    Route::post('/admin/verification/reject/{store}', [VerificationController::class, 'reject']);
+
+    Route::get('/admin/users', [AdminUserController::class, 'index']);
+
+});
+
 require __DIR__.'/auth.php';
