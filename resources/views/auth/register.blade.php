@@ -1,52 +1,102 @@
-<x-guest-layout>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background-color: #fdf2f8; /* Soft Pink */
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center font-[Inter]">
+
+<div class="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">
+
+    <h2 class="text-3xl font-semibold text-center text-gray-800">
+        Create Account
+    </h2>
+
+    <p class="text-sm text-center text-gray-500 mb-6">
+        Join our fashion community
+    </p>
+
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+        {{-- ROLE DROPDOWN --}}
+        <div class="mb-4">
+            <label class="block mb-1 text-sm font-medium text-gray-700">Register as</label>
+            <select 
+                name="role" 
+                required
+                class="w-full p-3 rounded-lg border border-gray-300 bg-pink-50/40 focus:ring-2 focus:ring-pink-300 transition">
+                <option value="" disabled selected>Pilih peran</option>
+                <option value="buyer">Buyer</option>
+                <option value="seller">Seller</option>
+            </select>
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        {{-- NAME --}}
+        <div class="mb-4">
+            <label class="block mb-1 text-sm font-medium text-gray-700">Full Name</label>
+            <input 
+                type="text" 
+                name="name" 
+                required
+                class="w-full p-3 rounded-lg border border-gray-300 bg-pink-50/40 focus:ring-2 focus:ring-pink-300 transition">
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        {{-- EMAIL --}}
+        <div class="mb-4">
+            <label class="block mb-1 text-sm font-medium text-gray-700">Email</label>
+            <input 
+                type="email" 
+                name="email" 
+                required
+                class="w-full p-3 rounded-lg border border-gray-300 bg-pink-50/40 focus:ring-2 focus:ring-pink-300 transition">
         </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        {{-- PASSWORD --}}
+        <div class="mb-4">
+            <label class="block mb-1 text-sm font-medium text-gray-700">Password</label>
+            <input 
+                type="password" 
+                name="password" 
+                required
+                class="w-full p-3 rounded-lg border border-gray-300 bg-pink-50/40 focus:ring-2 focus:ring-pink-300 transition">
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
+        {{-- CONFIRM PASSWORD --}}
+        <div class="mb-4">
+            <label class="block mb-1 text-sm font-medium text-gray-700">Confirm Password</label>
+            <input 
+                type="password" 
+                name="password_confirmation" 
+                required
+                class="w-full p-3 rounded-lg border border-gray-300 bg-pink-50/40 focus:ring-2 focus:ring-pink-300 transition">
+        </div>
+
+        {{-- SUBMIT BUTTON --}}
+        <button 
+            type="submit"
+            class="w-full py-3 rounded-lg bg-pink-500 hover:bg-pink-600 text-white font-medium transition shadow-sm">
+            Create Account
+        </button>
+
+        <p class="text-center text-sm text-gray-600 mt-5">
+            Already have an account?
+            <a href="{{ route('login') }}" class="text-pink-600 font-medium hover:underline">
+                Login
             </a>
+        </p>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
     </form>
-</x-guest-layout>
+</div>
+
+</body>
+</html>
