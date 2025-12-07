@@ -47,4 +47,17 @@ Route::middleware(['access:admin'])->group(function () {
 
 });
 
+// Homepage customer
+Route::get('/', [HomeController::class, 'index'])->name('homepage');
+
+// Admin Dashboard
+Route::middleware(['access:admin'])->get('/admin/dashboard', function () {
+    return view('admin.dashboard');
+})->name('admin.dashboard');
+
+// Seller Dashboard
+Route::middleware(['access:seller'])->get('/seller/dashboard', function () {
+    return view('seller.dashboard');
+})->name('seller.dashboard');
+
 require __DIR__.'/auth.php';
