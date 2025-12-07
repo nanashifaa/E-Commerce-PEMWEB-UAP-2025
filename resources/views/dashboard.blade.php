@@ -1,23 +1,30 @@
 <x-app-layout>
 
-<div class="min-h-screen bg-[#f7f7f8] font-[Inter]">
+<style>
+    body, * {
+        font-family: 'Poppins', sans-serif !important;
+    }
+</style>
+
+<div class="min-h-screen bg-[#fce8f4]">
 
     {{-- TOPBAR --}}
-    <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-        <h1 class="text-xl font-semibold text-gray-900 tracking-tight">Dashboard</h1>
+    <header class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-semibold text-gray-800">Dashboard</h1>
 
         <div class="flex items-center gap-3">
-            <span class="text-gray-700">{{ Auth::user()->name }}</span>
-            <img src="https://i.pravatar.cc/40" class="w-10 h-10 rounded-full border">
+            <span class="text-gray-700 font-medium">{{ Auth::user()->name }}</span>
+            <img src="https://i.pravatar.cc/100"
+                 class="w-10 h-10 rounded-full border border-pink-300 shadow-sm">
         </div>
     </header>
 
     <div class="flex">
 
         {{-- SIDEBAR --}}
-        <aside class="w-60 min-h-screen bg-white border-r border-gray-200 p-6 space-y-5 hidden md:block">
+        <aside class="w-60 min-h-screen bg-white border-r p-6 space-y-5 hidden md:block">
 
-            <a href="/dashboard" class="block text-gray-800 font-semibold hover:text-pink-600">Dashboard</a>
+            <a href="/dashboard" class="block text-pink-600 font-semibold">Dashboard</a>
             <a href="/seller/orders" class="block text-gray-600 hover:text-pink-600">Orders</a>
             <a href="/seller/products" class="block text-gray-600 hover:text-pink-600">Products</a>
             <a href="/seller/categories" class="block text-gray-600 hover:text-pink-600">Categories</a>
@@ -28,7 +35,6 @@
                 @csrf
                 <button class="text-gray-500 hover:text-red-500">Logout</button>
             </form>
-
         </aside>
 
         {{-- MAIN CONTENT --}}
@@ -36,29 +42,31 @@
 
             {{-- WELCOME --}}
             <div>
-                <h2 class="text-3xl font-semibold text-gray-900">Hello, {{ Auth::user()->name }} 👋</h2>
+                <h2 class="text-3xl font-semibold text-gray-800">
+                    Hello, {{ Auth::user()->name }} 👋
+                </h2>
                 <p class="text-gray-500">Welcome back to your fashion dashboard</p>
             </div>
 
             {{-- STATS --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
 
-                <div class="bg-white p-6 rounded-xl border shadow-sm">
+                <div class="bg-white p-6 rounded-xl border border-pink-200 shadow-sm hover:shadow-md transition">
                     <p class="text-sm text-gray-500">Total Orders</p>
                     <h3 class="text-3xl font-semibold mt-2">178</h3>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl border shadow-sm">
+                <div class="bg-white p-6 rounded-xl border border-pink-200 shadow-sm hover:shadow-md transition">
                     <p class="text-sm text-gray-500">Revenue</p>
                     <h3 class="text-3xl font-semibold text-pink-600 mt-2">Rp 12.450.000</h3>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl border shadow-sm">
+                <div class="bg-white p-6 rounded-xl border border-pink-200 shadow-sm hover:shadow-md transition">
                     <p class="text-sm text-gray-500">Products</p>
                     <h3 class="text-3xl font-semibold mt-2">42</h3>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl border shadow-sm">
+                <div class="bg-white p-6 rounded-xl border border-pink-200 shadow-sm hover:shadow-md transition">
                     <p class="text-sm text-gray-500">Pending Orders</p>
                     <h3 class="text-3xl font-semibold text-yellow-600 mt-2">6</h3>
                 </div>
@@ -67,9 +75,9 @@
 
             {{-- LATEST ORDERS --}}
             <div class="mt-14">
-                <h3 class="text-xl font-semibold text-gray-900 mb-4">Latest Orders</h3>
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Latest Orders</h3>
 
-                <div class="bg-white rounded-xl border shadow-sm p-6">
+                <div class="bg-white rounded-xl border border-pink-200 shadow-sm p-6">
 
                     <table class="w-full text-left">
                         <thead class="text-gray-500 text-sm border-b">
@@ -88,7 +96,9 @@
                                 <td class="py-3">Aulia Rahma</td>
                                 <td class="py-3">Rp 250.000</td>
                                 <td class="py-3">
-                                    <span class="px-3 py-1 text-xs rounded-lg bg-yellow-100 text-yellow-700">Pending</span>
+                                    <span class="px-3 py-1 text-xs rounded-lg bg-yellow-100 text-yellow-700">
+                                        Pending
+                                    </span>
                                 </td>
                             </tr>
 
@@ -97,7 +107,9 @@
                                 <td class="py-3">Nadya Putri</td>
                                 <td class="py-3">Rp 480.000</td>
                                 <td class="py-3">
-                                    <span class="px-3 py-1 text-xs rounded-lg bg-green-100 text-green-700">Completed</span>
+                                    <span class="px-3 py-1 text-xs rounded-lg bg-green-100 text-green-700">
+                                        Completed
+                                    </span>
                                 </td>
                             </tr>
 
