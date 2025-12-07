@@ -47,8 +47,6 @@ Route::middleware(['access:admin'])->group(function () {
 
 });
 
-// Homepage customer
-Route::get('/', [HomeController::class, 'index'])->name('homepage');
 
 // Admin Dashboard
 Route::middleware(['access:admin'])->get('/admin/dashboard', function () {

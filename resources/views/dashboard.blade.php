@@ -1,17 +1,116 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
+<div class="min-h-screen bg-[#f7f7f8] font-[Inter]">
+
+    {{-- TOPBAR --}}
+    <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-semibold text-gray-900 tracking-tight">Dashboard</h1>
+
+        <div class="flex items-center gap-3">
+            <span class="text-gray-700">{{ Auth::user()->name }}</span>
+            <img src="https://i.pravatar.cc/40" class="w-10 h-10 rounded-full border">
+        </div>
+    </header>
+
+    <div class="flex">
+
+        {{-- SIDEBAR --}}
+        <aside class="w-60 min-h-screen bg-white border-r border-gray-200 p-6 space-y-5 hidden md:block">
+
+            <a href="/dashboard" class="block text-gray-800 font-semibold hover:text-pink-600">Dashboard</a>
+            <a href="/seller/orders" class="block text-gray-600 hover:text-pink-600">Orders</a>
+            <a href="/seller/products" class="block text-gray-600 hover:text-pink-600">Products</a>
+            <a href="/seller/categories" class="block text-gray-600 hover:text-pink-600">Categories</a>
+            <a href="/seller/balance" class="block text-gray-600 hover:text-pink-600">Balance</a>
+            <a href="/seller/withdrawals" class="block text-gray-600 hover:text-pink-600">Withdrawals</a>
+
+            <form method="POST" action="{{ route('logout') }}" class="pt-10">
+                @csrf
+                <button class="text-gray-500 hover:text-red-500">Logout</button>
+            </form>
+
+        </aside>
+
+        {{-- MAIN CONTENT --}}
+        <main class="flex-1 p-10">
+
+            {{-- WELCOME --}}
+            <div>
+                <h2 class="text-3xl font-semibold text-gray-900">Hello, {{ Auth::user()->name }} 👋</h2>
+                <p class="text-gray-500">Welcome back to your fashion dashboard</p>
+            </div>
+
+            {{-- STATS --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+
+                <div class="bg-white p-6 rounded-xl border shadow-sm">
+                    <p class="text-sm text-gray-500">Total Orders</p>
+                    <h3 class="text-3xl font-semibold mt-2">178</h3>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border shadow-sm">
+                    <p class="text-sm text-gray-500">Revenue</p>
+                    <h3 class="text-3xl font-semibold text-pink-600 mt-2">Rp 12.450.000</h3>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border shadow-sm">
+                    <p class="text-sm text-gray-500">Products</p>
+                    <h3 class="text-3xl font-semibold mt-2">42</h3>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border shadow-sm">
+                    <p class="text-sm text-gray-500">Pending Orders</p>
+                    <h3 class="text-3xl font-semibold text-yellow-600 mt-2">6</h3>
+                </div>
+
+            </div>
+
+            {{-- LATEST ORDERS --}}
+            <div class="mt-14">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Latest Orders</h3>
+
+                <div class="bg-white rounded-xl border shadow-sm p-6">
+
+                    <table class="w-full text-left">
+                        <thead class="text-gray-500 text-sm border-b">
+                            <tr>
+                                <th class="py-3">Order Code</th>
+                                <th class="py-3">Customer</th>
+                                <th class="py-3">Total</th>
+                                <th class="py-3">Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr class="border-b">
+                                <td class="py-3">TRX001</td>
+                                <td class="py-3">Aulia Rahma</td>
+                                <td class="py-3">Rp 250.000</td>
+                                <td class="py-3">
+                                    <span class="px-3 py-1 text-xs rounded-lg bg-yellow-100 text-yellow-700">Pending</span>
+                                </td>
+                            </tr>
+
+                            <tr class="border-b">
+                                <td class="py-3">TRX002</td>
+                                <td class="py-3">Nadya Putri</td>
+                                <td class="py-3">Rp 480.000</td>
+                                <td class="py-3">
+                                    <span class="px-3 py-1 text-xs rounded-lg bg-green-100 text-green-700">Completed</span>
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
                 </div>
             </div>
-        </div>
+
+        </main>
+
     </div>
+
+</div>
+
 </x-app-layout>
