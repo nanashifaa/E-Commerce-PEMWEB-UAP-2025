@@ -6,6 +6,9 @@
     <title>Register - App</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
+    {{-- TAMBAHAN: CSRF META UNTUK KEAMANAN --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <style>
         body {
             background-color: #fdf2f8; /* Soft Pink */
@@ -24,6 +27,17 @@
     <p class="text-sm text-center text-gray-500 mb-6">
         Join our fashion community
     </p>
+
+    {{-- TAMBAHAN: TAMPILKAN ERROR VALIDASI JIKA ADA --}}
+    @if ($errors->any())
+        <div class="mb-4 p-3 rounded-lg bg-red-100 text-red-700 text-sm">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <form method="POST" action="{{ route('register') }}">
         @csrf

@@ -47,7 +47,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         // default buyer
-        return redirect()->route('homepage');
+        return redirect()->route('home');
     }
 
     /**
