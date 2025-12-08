@@ -53,6 +53,8 @@ Route::middleware(['auth', 'access:member'])->group(function () {
     Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
     Route::get('/checkout/{slug}', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::post('/cart/add', [App\Http\Controllers\CartController::class, 'add'])
+    ->name('cart.add');
 
 
 });

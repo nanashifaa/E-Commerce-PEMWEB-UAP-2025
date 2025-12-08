@@ -54,11 +54,26 @@
                 {{ $product->description }}
             </p>
 
-            {{-- BUY BUTTON --}}
-            <a href="/checkout/{{ $product->slug }}"
-               class="block w-full mt-8 bg-pink-500 text-white text-center py-3 rounded-lg font-medium text-lg hover:bg-pink-600 transition">
-                Beli Sekarang
-            </a>
+           {{-- BUY & CART BUTTONS --}}
+<div class="mt-8 flex flex-col gap-4">
+
+    {{-- Tombol Tambah ke Keranjang --}}
+    <form action="{{ route('cart.add') }}" method="POST">
+        @csrf
+        <input type="hidden" name="product_id" value="{{ $product->id }}">
+        <button type="submit"
+                class="w-full py-3 bg-pink-400 hover:bg-pink-500 text-white rounded-lg font-medium text-lg transition">
+            Tambah ke Keranjang
+        </button>
+    </form>
+
+    {{-- Tombol Beli Sekarang --}}
+    <a href="/checkout/{{ $product->slug }}"
+       class="w-full text-center py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium text-lg transition">
+        Beli Sekarang
+    </a>
+
+</div>
 
         </div>
     </div>
