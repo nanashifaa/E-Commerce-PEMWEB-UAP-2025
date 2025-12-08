@@ -48,10 +48,12 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'access:member'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('/checkout', [CheckoutController::class, 'index']);
     Route::get('/history', [HistoryController::class, 'index']);
     Route::get('/wallet/topup', [WalletController::class, 'topup']);
     Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
+    Route::get('/checkout/{slug}', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+
 
 });
 

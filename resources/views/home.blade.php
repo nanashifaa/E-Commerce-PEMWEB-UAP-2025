@@ -7,7 +7,7 @@
     {{-- TITLE SECTION --}}
     <div class="text-center mb-12">
         <h1 class="text-4xl font-semibold text-pink-600">
-            Cheap & use Fashion
+            Cheap & Use.
         </h1>
 
         <p class="text-gray-700 mt-2 text-lg">
