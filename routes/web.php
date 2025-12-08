@@ -27,6 +27,10 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/seller/dashboard', function () {
+        return view('seller.dashboard');
+    })->name('seller.dashboard');
+
 // Profile
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -64,9 +68,7 @@ Route::middleware(['auth', 'access:seller'])->group(function () {
     Route::get('/seller/balance', [BalanceController::class, 'index']);
 
     // Seller dashboard
-    Route::get('/seller/dashboard', function () {
-        return view('seller.dashboard');
-    })->name('seller.dashboard');
+    
 });
 
 /*
