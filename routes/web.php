@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\WalletController;
@@ -53,8 +54,11 @@ Route::middleware(['auth', 'access:member'])->group(function () {
     Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
     Route::get('/checkout/{slug}', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
-    Route::post('/cart/add', [App\Http\Controllers\CartController::class, 'add'])
-    ->name('cart.add');
+    Route::post('/cart/add', [App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/delete/{id}', [CartController::class, 'delete'])->name('cart.delete');
+
 
 
 });

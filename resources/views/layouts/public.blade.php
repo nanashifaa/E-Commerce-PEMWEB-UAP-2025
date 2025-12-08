@@ -24,6 +24,12 @@
     @include('components.navbar')
 
     <main class="min-h-screen">
+        @if (session('success'))
+    <div class="w-full bg-green-500 text-white text-center py-3 mb-4">
+        {{ session('success') }}
+    </div>
+@endif
+
         @yield('content')
     </main>
 

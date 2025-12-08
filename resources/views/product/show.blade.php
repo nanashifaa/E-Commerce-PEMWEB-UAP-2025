@@ -57,7 +57,7 @@
            {{-- BUY & CART BUTTONS --}}
 <div class="mt-8 flex flex-col gap-4">
 
-    {{-- Tombol Tambah ke Keranjang --}}
+    {{-- Tambah ke Keranjang --}}
     <form action="{{ route('cart.add') }}" method="POST">
         @csrf
         <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -67,13 +67,14 @@
         </button>
     </form>
 
-    {{-- Tombol Beli Sekarang --}}
+    {{-- Beli Sekarang --}}
     <a href="/checkout/{{ $product->slug }}"
        class="w-full text-center py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium text-lg transition">
         Beli Sekarang
     </a>
 
 </div>
+
 
         </div>
     </div>
