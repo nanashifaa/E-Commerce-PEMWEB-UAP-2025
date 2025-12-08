@@ -112,6 +112,11 @@ Route::middleware(['auth', 'access:admin'])->group(function () {
 
     Route::delete('/admin/users/{user}', [AdminUserController::class, 'delete'])
     ->name('admin.users.delete');
+
+    Route::get('/admin/verification', [VerificationController::class, 'index']);
+    Route::post('/admin/verification/approve/{store}', [VerificationController::class, 'approve']);
+    Route::post('/admin/verification/reject/{store}', [VerificationController::class, 'reject']);
+
 });
 });
 

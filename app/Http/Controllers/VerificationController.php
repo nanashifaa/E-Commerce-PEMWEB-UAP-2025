@@ -3,33 +3,31 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Store;
+
 
 class VerificationController extends Controller
 {
     public function index()
     {
-        $stores = Store::with('user')
-                        ->where('is_verified', false)
-                        ->orderBy('created_at', 'desc')
-                        ->get();
+        // Ambil semua store dengan status pending
+        $pendingStores = Store::where('is_verified', false)->get();
 
-        return view('admin.verification.index', compact('stores'));
+        // Ambil store yang sudah verified
+        $approvedStores = Store::where('is_verified', true)->get();
+
+        return view('admin.verification.index', compact('pendingStores', 'approvedStores'));
     }
 
-    // Approve store
     public function approve(Store $store)
     {
-        $store->update([
-            'is_verified' => true
-        ]);
-
-        return back()->with('success', 'Store approved successfully.');
+        $store->update(['is_verified' => true]);
+        return back()->with('success', 'Store approved successfully!');
     }
 
-    // Reject store (hapus)
     public function reject(Store $store)
     {
         $store->delete();
-
-        return back()->with('success', 'Store rejected and removed.');
-    }}
+        return back()->with('success', 'Store rejected and removed!');
+    }
+}
