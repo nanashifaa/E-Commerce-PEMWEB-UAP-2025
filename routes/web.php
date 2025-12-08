@@ -17,6 +17,7 @@ use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminDashboardController; // ← TAMBAHKAN INI
 
+
 // Public page
 Route::get('/', function () {
     return view('welcome');
@@ -91,6 +92,11 @@ Route::middleware(['auth', 'access:admin'])->group(function () {
 
     // User management
     Route::get('/admin/users', [AdminUserController::class, 'index']);
+
+    Route::get('/admin/stores', [AdminStoreController::class, 'index'])
+    ->middleware(['auth', 'access:admin']);
+
+
 });
 
 require __DIR__.'/auth.php';

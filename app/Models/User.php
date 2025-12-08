@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Store; // <-- Tambahkan ini
 
 class User extends Authenticatable
 {
@@ -45,4 +46,9 @@ class User extends Authenticatable
     {
         return $this->role === 'seller';
     }
+
+    public function store()
+    {
+        return $this->hasOne(Store::class); // <-- Sudah dijamin benar
+    }   
 }
