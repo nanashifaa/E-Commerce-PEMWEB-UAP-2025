@@ -51,6 +51,8 @@ Route::middleware(['auth', 'access:member'])->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index']);
     Route::get('/history', [HistoryController::class, 'index']);
     Route::get('/wallet/topup', [WalletController::class, 'topup']);
+    Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
+
 });
 
 /*
