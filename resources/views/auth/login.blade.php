@@ -86,6 +86,10 @@
             </a>
         </p>
 
+        <form method="POST" action="{{ route('login') }}">
+        @csrf
+
+
     </form>
 
 </div>

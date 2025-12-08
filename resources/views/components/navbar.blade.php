@@ -17,5 +17,6 @@
         @else
             <a href="/login" class="text-gray-700 hover:text-pink-600">Login</a>
         @endauth
+            <a href="/dashboard" class="text-gray-700 hover:text-pink-600">Profile</a>
     </div>
 </nav>
