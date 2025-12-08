@@ -6,6 +6,16 @@ use App\Models\Product;
 
 class ProductController extends Controller
 {
+    public function index()
+{
+    $products = auth()->user()
+        ->products()  // relasi seller → products
+        ->latest()
+        ->get();
+
+    return view('seller.products.index', compact('products'));
+}
+
     public function show($slug)
     {
         // Ambil data produk beserta relasi

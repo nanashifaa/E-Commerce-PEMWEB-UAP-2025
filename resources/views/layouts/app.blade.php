@@ -15,6 +15,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
+
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
             @include('layouts.navigation')
@@ -30,8 +31,12 @@
 
             <!-- Page Content -->
             <main>
-                <!-- @yield('content') -->
-                 {{$slot}}
+                {{-- AUTO SWITCH SLOT / YIELD FIX --}}
+                @if(isset($slot))
+                    {{ $slot }}
+                @else
+                    @yield('content')
+                @endif
             </main>
         </div>
     </body>

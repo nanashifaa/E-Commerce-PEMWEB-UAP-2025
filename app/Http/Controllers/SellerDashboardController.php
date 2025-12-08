@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Store;
 
-class AdminDashboardController extends Controller
+class SellerDashboardController extends Controller
 {
-public function index()
+    public function index()
     {
-        return view('seller.dashboard', [
-            'totalUsers' => User::count(),
-            'totalSellers' => User::where('role', 'seller')->count(),
-            'pendingStores' => Store::where('is_verified', false)->count(),
-        ]);
+        $store = Store::where('user_id', auth()->id())->first();
+
+        return view('seller.dashboard', compact('store'));
     }
 }

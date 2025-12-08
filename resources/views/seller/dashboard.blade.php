@@ -123,6 +123,29 @@
         </main>
 
     </div>
+{{-- STORE STATUS / REGISTER STORE --}}
+@if(!$store)
+    <div class="mt-6 bg-pink-100 border border-pink-300 text-pink-700 p-5 rounded-xl">
+        <h3 class="text-lg font-semibold">Kamu belum memiliki toko</h3>
+        <p class="text-sm mt-1">Daftarkan toko kamu untuk mulai menjual produk.</p>
+
+        <a href="/store/register"
+           class="inline-block mt-3 bg-pink-500 hover:bg-pink-600 text-white px-5 py-2 rounded-lg shadow">
+            Daftarkan Toko
+        </a>
+    </div>
+@else
+    <div class="mt-6 bg-green-100 border border-green-300 text-green-700 p-5 rounded-xl">
+        <h3 class="text-lg font-semibold">Status Toko: 
+            @if($store->is_verified)
+                <span class="text-green-600">Terverifikasi</span>
+            @else
+                <span class="text-yellow-600">Menunggu Verifikasi Admin</span>
+            @endif
+        </h3>
+        <p class="text-sm mt-1">{{ $store->name }}</p>
+    </div>
+@endif
 
 </div>
 
