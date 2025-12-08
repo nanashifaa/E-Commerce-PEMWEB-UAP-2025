@@ -1,6 +1,14 @@
 @extends('layouts.public')
 
 @section('content')
+@if ($errors->any())
+    <div class="bg-red-100 border border-red-300 text-red-700 p-3 rounded-xl mb-4">
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
+
 
 <div class="max-w-4xl mx-auto px-6 py-12">
 
@@ -55,6 +63,21 @@
                       rows="3"
                       placeholder="Masukkan alamat lengkap"></textarea>
         </div>
+        {{-- CITY --}}
+<div class="bg-white p-6 rounded-2xl border shadow-sm mb-8">
+    <h3 class="text-lg font-semibold text-gray-800 mb-3">Kota</h3>
+    <input type="text" name="city" required
+           class="w-full p-3 border rounded-xl bg-white focus:ring-2 focus:ring-pink-400 outline-none"
+           placeholder="Contoh: Semarang">
+</div>
+
+{{-- POSTAL CODE --}}
+<div class="bg-white p-6 rounded-2xl border shadow-sm mb-8">
+    <h3 class="text-lg font-semibold text-gray-800 mb-3">Kode Pos</h3>
+    <input type="text" name="postal_code" required
+           class="w-full p-3 border rounded-xl bg-white focus:ring-2 focus:ring-pink-400 outline-none"
+           placeholder="Contoh: 50121">
+</div>
 
         {{-- SHIPPING TYPE --}}
         <div class="bg-white p-6 rounded-2xl border shadow-sm mb-8">

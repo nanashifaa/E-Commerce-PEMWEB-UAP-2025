@@ -48,6 +48,10 @@ Route::middleware('auth')->group(function () {
 */
 
 Route::middleware(['auth', 'access:member'])->group(function () {
+    Route::get('/checkout/success', function () {
+    return view('checkout.success');
+})->name('checkout.success');
+
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/history', [HistoryController::class, 'index']);
     Route::get('/wallet/topup', [WalletController::class, 'topup']);
@@ -58,6 +62,8 @@ Route::middleware(['auth', 'access:member'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/delete/{id}', [CartController::class, 'delete'])->name('cart.delete');
+Route::get('/payment', [WalletController::class, 'paymentPage'])->name('payment.page');
+Route::post('/payment/confirm', [WalletController::class, 'confirmPayment'])->name('payment.confirm');
 
 
 

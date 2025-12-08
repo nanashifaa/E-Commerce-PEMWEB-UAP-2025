@@ -68,10 +68,12 @@
     </form>
 
     {{-- Beli Sekarang --}}
-    <a href="/checkout/{{ $product->slug }}"
-       class="w-full text-center py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-medium text-lg transition">
-        Beli Sekarang
-    </a>
+
+    <a href="{{ route('checkout.index', $product->slug) }}"
+   class="block w-full mt-8 bg-pink-500 text-white text-center py-3 rounded-lg font-medium text-lg hover:bg-pink-600 transition">
+    Beli Sekarang
+</a>
+
 
 </div>
 
