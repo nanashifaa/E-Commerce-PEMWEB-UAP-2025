@@ -17,6 +17,8 @@ use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminDashboardController; // ← TAMBAHKAN INI
+use App\Http\Controllers\TransactionHistoryController;
+
 
 
 // Public page
@@ -54,6 +56,8 @@ Route::middleware(['auth', 'access:member'])->group(function () {
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/history', [HistoryController::class, 'index']);
+    Route::get('/history', [TransactionHistoryController::class, 'index'])->name('history.index');
+    Route::get('/history/{id}', [TransactionHistoryController::class, 'show'])->name('history.show');
     Route::get('/wallet/topup', [WalletController::class, 'topup']);
     Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
     Route::get('/checkout/{slug}', [CheckoutController::class, 'index'])->name('checkout.index');
