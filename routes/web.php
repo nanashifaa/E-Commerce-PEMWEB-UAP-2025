@@ -99,7 +99,16 @@ Route::middleware(['auth', 'access:admin'])->group(function () {
     Route::get('/admin/stores', [AdminStoreController::class, 'index'])
     ->middleware(['auth', 'access:admin']);
 
+        Route::middleware(['auth', 'access:admin'])->group(function () {
 
+    Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users');
+
+    Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])->name('admin.users.edit');
+    Route::post('/admin/users/{user}/update', [AdminUserController::class, 'update'])->name('admin.users.update');
+
+    Route::delete('/admin/users/{user}', [AdminUserController::class, 'delete'])
+    ->name('admin.users.delete');
+});
 });
 
 require __DIR__.'/auth.php';

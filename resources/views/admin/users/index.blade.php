@@ -64,29 +64,75 @@
                         @endif
                     </td>
 
-                    {{-- ACTION --}}
-                    <td class="py-3 px-2 text-right space-x-3">
+                   {{-- ACTION --}}
+<td class="py-3 px-2 text-right space-x-3">
 
-                        <a href="#"
-                           class="text-pink-600 hover:underline font-medium">
-                            Edit
-                        </a>
+    {{-- EDIT BUTTON --}}
+    <a href="{{ route('admin.users.edit', $user->id) }}"
+       class="text-pink-600 hover:underline font-medium">
+        Edit
+    </a>
 
-                        <a href="#"
-                           class="text-red-500 hover:underline font-medium">
-                            Delete
-                        </a>
+    {{-- DELETE BUTTON --}}
+    <form action="{{ route('admin.users.delete', $user->id) }}" 
+          method="POST" 
+          class="inline delete-form">
+        @csrf
+        @method('DELETE')
 
-                    </td>
+        <button type="button"
+                class="text-red-500 hover:underline font-medium delete-btn">
+            Delete
+        </button>
+    </form>
 
-                </tr>
-                @endforeach
+</td>
+</tr>
+@endforeach
 
-            </tbody>
-        </table>
+</tbody>
+</table>
 
-    </div>
-
+</div>
 </div>
 
 @endsection
+
+
+{{-- ========================= --}}
+{{-- SWEETALERT SCRIPT (TAMBAHAN) --}}
+{{-- ========================= --}}
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll('.delete-btn').forEach(function (btn) {
+
+        btn.addEventListener('click', function () {
+
+            let form = this.closest('form');
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This user will be deleted permanently.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#e11d48",
+                cancelButtonColor: "#6b7280",
+                confirmButtonText: "Yes, delete",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+
+        });
+
+    });
+
+});
+</script>
+@endpush
