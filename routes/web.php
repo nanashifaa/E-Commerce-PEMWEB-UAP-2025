@@ -25,7 +25,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// USER DASHBOARD (default laravel)
+// USER DASHBOARD
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -58,8 +58,8 @@ Route::middleware(['auth', 'access:member'])->group(function () {
 
     Route::get('/wallet/topup', [WalletController::class, 'topup'])->name('wallet.topup');
     Route::post('/wallet/topup', [WalletController::class, 'submitTopup'])->name('wallet.topup.submit');
-   Route::get('/wallet/topup/confirm/{topup}', [WalletController::class, 'confirmTopup'])
-         ->name('wallet.topup.confirm');
+    Route::get('/wallet/topup/confirm/{topup}', [WalletController::class, 'confirmTopup'])->name('wallet.topup.confirm');
+
     Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 
     Route::get('/checkout/{slug}', [CheckoutController::class, 'index'])->name('checkout.index');
@@ -73,6 +73,7 @@ Route::middleware(['auth', 'access:member'])->group(function () {
     Route::get('/payment', [WalletController::class, 'paymentPage'])->name('payment.page');
     Route::post('/payment/confirm', [WalletController::class, 'confirmPayment'])->name('payment.confirm');
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -88,8 +89,34 @@ Route::middleware(['auth', 'access:seller'])->group(function () {
     // MENU SELLER
     Route::get('/seller/profile', [SellerProfileController::class, 'index']);
 
-    Route::get('/seller/categories', [CategoryController::class, 'index']);
-       Route::get('/seller/products', [ProductController::class, 'index'])
+    // CATEGORIES LIST
+    Route::get('/seller/categories', [CategoryController::class, 'index'])
+        ->name('seller.categories.index');
+
+    /*
+    |--------------------------------------------------------------------------
+    | ✅ CATEGORY CRUD (FINAL, LENGKAP, DAN SUDAH DITEMPATKAN BENAR)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/seller/categories/create', [CategoryController::class, 'create'])
+        ->name('seller.categories.create');
+
+    Route::post('/seller/categories/store', [CategoryController::class, 'store'])
+        ->name('seller.categories.store');
+
+    Route::get('/seller/categories/{category}/edit', [CategoryController::class, 'edit'])
+        ->name('seller.categories.edit');
+
+    Route::put('/seller/categories/{category}', [CategoryController::class, 'update'])
+        ->name('seller.categories.update');
+
+    Route::delete('/seller/categories/{category}', [CategoryController::class, 'destroy'])
+        ->name('seller.categories.delete');
+    // END CATEGORY CRUD
+
+
+    // PRODUCTS
+    Route::get('/seller/products', [ProductController::class, 'index'])
         ->name('seller.products.index');
 
     Route::get('/seller/products/create', [ProductController::class, 'create'])
@@ -106,11 +133,12 @@ Route::middleware(['auth', 'access:seller'])->group(function () {
 
     Route::delete('/seller/products/{product}', [ProductController::class, 'destroy'])
         ->name('seller.products.delete');
-        
+
     Route::get('/seller/orders', [OrderController::class, 'index']);
     Route::get('/seller/withdrawals', [WithdrawalController::class, 'index']);
     Route::get('/seller/balance', [BalanceController::class, 'index']);
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -119,15 +147,12 @@ Route::middleware(['auth', 'access:seller'])->group(function () {
 */
 Route::middleware(['auth', 'access:admin'])->group(function () {
 
-    // DASHBOARD
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
-    // VERIFIKASI TOKO
     Route::get('/admin/verification', [VerificationController::class, 'index']);
     Route::post('/admin/verification/approve/{store}', [VerificationController::class, 'approve']);
     Route::post('/admin/verification/reject/{store}', [VerificationController::class, 'reject']);
 
-    // USERS
     Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users');
     Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])->name('admin.users.edit');
     Route::post('/admin/users/{user}/update', [AdminUserController::class, 'update'])->name('admin.users.update');
