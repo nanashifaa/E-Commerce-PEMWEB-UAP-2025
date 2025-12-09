@@ -57,7 +57,9 @@ Route::middleware(['auth', 'access:member'])->group(function () {
     Route::get('/history/{id}', [TransactionHistoryController::class, 'show'])->name('history.show');
 
     Route::get('/wallet/topup', [WalletController::class, 'topup'])->name('wallet.topup');
-    Route::post('/wallet/topup', [WalletController::class, 'process'])->name('wallet.topup.process');
+    Route::post('/wallet/topup', [WalletController::class, 'submitTopup'])->name('wallet.topup.submit');
+   Route::get('/wallet/topup/confirm/{topup}', [WalletController::class, 'confirmTopup'])
+         ->name('wallet.topup.confirm');
     Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 
     Route::get('/checkout/{slug}', [CheckoutController::class, 'index'])->name('checkout.index');
