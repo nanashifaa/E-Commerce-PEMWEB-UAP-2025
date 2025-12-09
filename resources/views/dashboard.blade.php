@@ -49,16 +49,21 @@
             {{-- USER STATS --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
 
+                {{-- BALANCE --}}
                 <div class="bg-white p-6 rounded-xl border border-pink-200 shadow-sm">
                     <p class="text-sm text-gray-500">Your Balance</p>
-                    <h3 class="text-3xl font-semibold text-pink-600 mt-2">Rp 150.000</h3>
+                    <h3 class="text-3xl font-semibold text-pink-600 mt-2">
+                        Rp {{ number_format(Auth::user()->balance, 0, ',', '.') }}
+                    </h3>
                 </div>
 
+                {{-- TOTAL ORDERS --}}
                 <div class="bg-white p-6 rounded-xl border border-pink-200 shadow-sm">
                     <p class="text-sm text-gray-500">Total Orders</p>
                     <h3 class="text-3xl font-semibold mt-2">12</h3>
                 </div>
 
+                {{-- PENDING DELIVERIES --}}
                 <div class="bg-white p-6 rounded-xl border border-pink-200 shadow-sm">
                     <p class="text-sm text-gray-500">Pending Deliveries</p>
                     <h3 class="text-3xl font-semibold text-yellow-600 mt-2">3</h3>

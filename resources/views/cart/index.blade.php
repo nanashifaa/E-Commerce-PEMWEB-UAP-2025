@@ -78,12 +78,6 @@
                 <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
             </div>
 
-            <a href="/checkout-from-cart"
-               class="block w-full text-center py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-xl text-lg font-medium transition">
-                Checkout
-            </a>
-        </div>
-
     @endif
 
 </div>

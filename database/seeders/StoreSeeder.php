@@ -26,7 +26,7 @@ class StoreSeeder extends Seeder
             'logo'        => 'default-logo.png', // bisa disesuaikan
             'about'       => 'Ini adalah deskripsi singkat tentang toko.',
             'phone'       => '081234567890',
-            'address_id'  => 1, // jika belum digunakan
+            // 'address_id'  => 1, // jika belum digunakan
             'city'        => 'Jakarta',
             'address'     => 'Jl. Contoh No. 123',
             'postal_code' => '12345',
