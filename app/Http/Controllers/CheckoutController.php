@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -28,45 +29,35 @@ class CheckoutController extends Controller
             'payment_method' => 'required|string',
         ]);
 
-        // Ambil produk
         $product = Product::findOrFail($request->product_id);
 
-        // Hitung shipping cost
         $shipping_cost = $request->shipping_type === 'express' ? 20000 : 10000;
 
         $subtotal = $product->price;
         $grand_total = $subtotal + $shipping_cost;
 
-        // Generate address_id (karena VARCHAR, bebas diisi string)
         $address_id = 'ADDR-' . strtoupper(Str::random(6));
-
-        // Tentukan status pembayaran
         $payment_status = $request->payment_method === 'wallet' ? 'paid' : 'unpaid';
 
-        // Simpan transaksi
-       $transaction = Transaction::create([
-    'code'          => 'TRX-' . strtoupper(Str::random(10)),
-    'buyer_id'      => Auth::id(),
-    'store_id'      => $product->store_id,
+        $transaction = Transaction::create([
+            'code'          => 'TRX-' . strtoupper(Str::random(10)),
+            'buyer_id'      => Auth::id(),
+            'store_id'      => $product->store_id,
 
-    'address'       => $request->address,
-    'address_id'    => $address_id, 
-    'city'          => $request->city,
-    'postal_code'   => $request->postal_code,
+            'address'       => $request->address,
+            'address_id'    => $address_id,
+            'city'          => $request->city,
+            'postal_code'   => $request->postal_code,
 
-    // WAJIB ADA SESUAI DATABASE
-    'shipping'      => 'Standard Courier',
+            'shipping'      => 'Standard Courier',
+            'shipping_type' => $request->shipping_type,
+            'shipping_cost' => $shipping_cost,
 
-    'shipping_type' => $request->shipping_type,
-    'shipping_cost' => $shipping_cost,
+            'tax'           => 0,
+            'grand_total'   => $grand_total,
+            'payment_status' => $payment_status,
+        ]);
 
-    'tax'           => 0,
-    'grand_total'   => $grand_total,
-
-    'payment_status' => $payment_status,
-]);
-
-        // Simpan detail transaksi
         TransactionDetail::create([
             'transaction_id' => $transaction->id,
             'product_id'     => $product->id,
@@ -74,7 +65,15 @@ class CheckoutController extends Controller
             'subtotal'       => $subtotal,
         ]);
 
-        // Redirect berdasarkan metode pembayaran
+        // ====== TAMBAHKAN ORDER UNTUK SELLER ======
+        Order::create([
+            'seller_id' => $product->store->user_id,
+            'buyer_id'  => Auth::id(),
+            'code'      => $transaction->code,
+            'total'     => $grand_total,
+            'status'    => 'pending',
+        ]);
+
         if ($request->payment_method === 'wallet') {
             return redirect('/dashboard')->with('success', 'Pembayaran via wallet berhasil!');
         }
