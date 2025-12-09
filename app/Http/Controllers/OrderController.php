@@ -8,13 +8,16 @@ use App\Models\Order;
 class OrderController extends Controller
 {
     public function index()
-    {
-        $sellerId = auth()->id();
+{
+    // ambil store milik seller yang login
+    $storeId = auth()->user()->store->id;
 
-        $orders = Order::where('seller_id', $sellerId)
-                        ->latest()
-                        ->get();
+    // ambil transaksi berdasarkan store_id
+    $orders = Order::where('store_id', $storeId)
+        ->latest()
+        ->get();
 
-        return view('seller.orders.index', compact('orders'));
-    }
+    return view('seller.orders.index', compact('orders'));
+}
+
 }

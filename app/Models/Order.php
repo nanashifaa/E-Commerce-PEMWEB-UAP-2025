@@ -6,16 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
+    protected $table = 'transactions'; // WAJIB!
+
     protected $fillable = [
-        'seller_id',
         'buyer_id',
+        'store_id',
         'code',
-        'total',
-        'status',
+        'grand_total',
+        'payment_status',
     ];
 
     public function buyer()
     {
         return $this->belongsTo(User::class, 'buyer_id');
+    }
+
+    public function store()
+    {
+        return $this->belongsTo(Store::class, 'store_id');
     }
 }

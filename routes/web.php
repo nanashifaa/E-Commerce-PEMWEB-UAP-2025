@@ -89,7 +89,24 @@ Route::middleware(['auth', 'access:seller'])->group(function () {
     Route::get('/seller/profile', [SellerProfileController::class, 'index']);
 
     Route::get('/seller/categories', [CategoryController::class, 'index']);
-    Route::get('/seller/products', [ProductController::class, 'index']);
+       Route::get('/seller/products', [ProductController::class, 'index'])
+        ->name('seller.products.index');
+
+    Route::get('/seller/products/create', [ProductController::class, 'create'])
+        ->name('seller.products.create');
+
+    Route::post('/seller/products/store', [ProductController::class, 'store'])
+        ->name('seller.products.store');
+
+    Route::get('/seller/products/{product}/edit', [ProductController::class, 'edit'])
+        ->name('seller.products.edit');
+
+    Route::put('/seller/products/{product}', [ProductController::class, 'update'])
+        ->name('seller.products.update');
+
+    Route::delete('/seller/products/{product}', [ProductController::class, 'destroy'])
+        ->name('seller.products.delete');
+        
     Route::get('/seller/orders', [OrderController::class, 'index']);
     Route::get('/seller/withdrawals', [WithdrawalController::class, 'index']);
     Route::get('/seller/balance', [BalanceController::class, 'index']);

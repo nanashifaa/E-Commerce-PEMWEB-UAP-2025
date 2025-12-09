@@ -82,7 +82,7 @@ class CheckoutController extends Controller
             return redirect('/payment?trx=' . $transaction->id)
                     ->with('success', 'Silakan selesaikan pembayaran VA.');
         }
-
+        
         return redirect('/dashboard')->with('success', 'Transaksi berhasil dibuat.');
     }
 }

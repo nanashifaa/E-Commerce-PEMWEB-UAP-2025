@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Store; // <-- Tambahkan ini
+use App\Models\Store;
+use App\Models\Product; // <-- Tambahkan ini
 
 class User extends Authenticatable
 {
@@ -30,12 +31,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function transactions()
-{
-    return $this->hasMany(\App\Models\Transaction::class);
-}
 
-    // Role helpers
+    public function transactions()
+    {
+        return $this->hasMany(\App\Models\Transaction::class);
+    }
+
     public function isAdmin()
     {
         return $this->role === 'admin';
@@ -53,6 +54,11 @@ class User extends Authenticatable
 
     public function store()
     {
-        return $this->hasOne(Store::class); // <-- Sudah dijamin benar
-    }   
+        return $this->hasOne(Store::class);
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'seller_id');
+    }
 }
