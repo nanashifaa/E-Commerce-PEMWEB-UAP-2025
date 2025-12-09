@@ -74,9 +74,25 @@ class CheckoutController extends Controller
             'status'    => 'pending',
         ]);
 
-        if ($request->payment_method === 'wallet') {
-            return redirect('/dashboard')->with('success', 'Pembayaran via wallet berhasil!');
-        }
+       if ($request->payment_method === 'wallet') {
+
+    // Kurangi saldo user (kalau mau)
+    $user = auth()->user();
+    if ($user->balance < $grand_total) {
+        return back()->withErrors("Saldo tidak cukup untuk pembayaran.");
+    }
+
+    // KURANGI SALDO
+    $user->balance -= $grand_total;
+    $user->save();
+
+    // SET STATUS TRANSAKSI MENJADI PAID
+    $transaction->payment_status = 'paid';
+    $transaction->save();
+
+    return redirect('/checkout/success')->with('success', 'Pembayaran wallet berhasil!');
+}
+
 
         if ($request->payment_method === 'va') {
             return redirect('/payment?trx=' . $transaction->id)
