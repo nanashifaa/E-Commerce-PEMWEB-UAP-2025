@@ -22,6 +22,7 @@ class VerificationController extends Controller
     public function approve(Store $store)
     {
         $store->update(['is_verified' => true]);
+        $store->user->update(['role' => 'seller']);
         return back()->with('success', 'Store approved successfully!');
     }
 

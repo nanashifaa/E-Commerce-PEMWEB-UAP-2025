@@ -49,7 +49,8 @@
                             {{-- IMAGE --}}
                             <td class="py-3">
                                 <img src="{{ asset('storage/' . ($p->productImages->first()->image ?? 'default.jpg')) }}"
-                                     class="w-14 h-14 rounded-lg object-cover shadow">
+                                     class="w-14 h-14 rounded-lg object-cover shadow"
+                                     style="width: 56px; height: 56px;">
                             </td>
 
                             {{-- NAME --}}

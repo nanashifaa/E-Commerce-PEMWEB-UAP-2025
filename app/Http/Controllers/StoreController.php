@@ -41,6 +41,6 @@ class StoreController extends Controller
             'is_verified' => false,
         ]);
 
-        return redirect('/seller/dashboard')->with('success', 'Store successfully submitted! Waiting for admin verification.');
+        return redirect('/dashboard')->with('success', 'Store successfully submitted! Waiting for admin verification.');
     }
 }

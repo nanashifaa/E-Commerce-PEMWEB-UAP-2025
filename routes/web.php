@@ -76,6 +76,10 @@ Route::middleware(['auth', 'access:member'])->group(function () {
 
     Route::get('/payment', [WalletController::class, 'paymentPage'])->name('payment.page');
     Route::post('/payment/confirm', [WalletController::class, 'confirmPayment'])->name('payment.confirm');
+
+    // REGISTER TOKO
+    Route::get('/store/register', [StoreController::class, 'create'])->name('store.register');
+    Route::post('/store/register', [StoreController::class, 'store'])->name('store.register.process');
 });
 
 
@@ -86,9 +90,7 @@ Route::middleware(['auth', 'access:member'])->group(function () {
 */
 Route::middleware(['auth', 'access:seller'])->group(function () {
 
-    // REGISTER TOKO
-    Route::get('/store/register', [StoreController::class, 'create'])->name('store.register');
-    Route::post('/store/register', [StoreController::class, 'store'])->name('store.register.process');
+
 
     // MENU SELLER
     Route::get('/seller/profile', [SellerProfileController::class, 'index']);
