@@ -100,4 +100,128 @@ class CheckoutController extends Controller
         
         return redirect('/dashboard')->with('success', 'Transaksi berhasil dibuat.');
     }
+
+    public function cartCheckout()
+    {
+        $carts = \App\Models\Cart::with(['product.store', 'product.productImages'])
+                    ->where('user_id', Auth::id())
+                    ->get();
+        
+        if($carts->isEmpty()) {
+            return redirect()->route('cart.index')->withErrors('Keranjang masih kosong.');
+        }
+
+        $total = 0;
+        foreach($carts as $c) {
+            $total += $c->qty * $c->product->price;
+        }
+
+        return view('checkout.cart', compact('carts', 'total'));
+    }
+
+    public function processCart(Request $request)
+    {
+        $request->validate([
+            'address'        => 'required|string',
+            'city'           => 'required|string',
+            'postal_code'    => 'required|string',
+            'shipping_type'  => 'required|string',
+            'payment_method' => 'required|string',
+        ]);
+
+        $user = Auth::user();
+        $carts = \App\Models\Cart::with(['product.store'])
+                    ->where('user_id', $user->id)
+                    ->get();
+
+        if($carts->isEmpty()) {
+            return redirect()->back()->withErrors('Keranjang kosong.');
+        }
+
+        // Hitung Grand Total (Subtotal produk + Ongkir per Toko??)
+        // Simplifikasi: 1 Transaksi per Toko.
+        
+        $cartsByStore = $carts->groupBy(fn($cart) => $cart->product->store_id);
+        $totalPaymentNeeded = 0;
+        $transactionsCreated = [];
+
+        // 1. Calculate Total first to check balance if Wallet
+        foreach($cartsByStore as $storeId => $storeCarts) {
+            $subtotalStore = 0;
+            foreach($storeCarts as $c) {
+                $subtotalStore += $c->qty * $c->product->price;
+            }
+            $shipping_cost = $request->shipping_type === 'express' ? 20000 : 10000;
+            $totalPaymentNeeded += $subtotalStore + $shipping_cost;
+        }
+
+        if ($request->payment_method === 'wallet') {
+            if ($user->balance < $totalPaymentNeeded) {
+                return back()->withErrors("Saldo tidak cukup for total Rp " . number_format($totalPaymentNeeded));
+            }
+            $user->balance -= $totalPaymentNeeded;
+            $user->save();
+        }
+
+        // 2. Process Transactions
+        foreach($cartsByStore as $storeId => $storeCarts) {
+            $subtotalStore = 0;
+            foreach($storeCarts as $c) {
+                $subtotalStore += $c->qty * $c->product->price;
+            }
+            $shipping_cost = $request->shipping_type === 'express' ? 20000 : 10000;
+            $grand_total = $subtotalStore + $shipping_cost;
+
+            $address_id = 'ADDR-' . strtoupper(Str::random(6));
+            $payment_status = $request->payment_method === 'wallet' ? 'paid' : 'unpaid';
+
+            $transaction = new Transaction();
+            $transaction->code = 'TRX-' . strtoupper(Str::random(10));
+            $transaction->buyer_id = $user->id;
+            $transaction->store_id = $storeId;
+            $transaction->address = $request->address;
+            $transaction->address_id = $address_id;
+            $transaction->city = $request->city;
+            $transaction->postal_code = $request->postal_code;
+            $transaction->shipping = 'Standard Courier';
+            $transaction->shipping_type = $request->shipping_type;
+            $transaction->shipping_cost = $shipping_cost;
+            $transaction->tax = 0;
+            $transaction->grand_total = $grand_total;
+            $transaction->payment_status = $payment_status;
+            $transaction->save();
+
+            foreach($storeCarts as $c) {
+                TransactionDetail::create([
+                    'transaction_id' => $transaction->id,
+                    'product_id'     => $c->product_id,
+                    'qty'            => $c->qty,
+                    'subtotal'       => $c->qty * $c->product->price,
+                ]);
+            }
+
+             // Order untuk Seller
+             Order::create([
+                'seller_id' => $storeCarts->first()->product->store->user_id,
+                'buyer_id'  => $user->id,
+                'code'      => $transaction->code,
+                'total'     => $grand_total,
+                'status'    => 'pending',
+            ]);
+
+            $transactionsCreated[] = $transaction->id;
+        }
+
+        // Clear Cart
+        \App\Models\Cart::where('user_id', $user->id)->delete();
+
+        if ($request->payment_method === 'va') {
+            // Redirect to payment page of the FIRST transaction (simplification)
+            // Or a bulk payment page? Given existing logic, let's just pick one or show success.
+             return redirect('/payment?trx=' . $transactionsCreated[0])
+                    ->with('success', 'Silakan selesaikan pembayaran VA.');
+        }
+
+        return redirect('/checkout/success')->with('success', 'Semua transaksi berhasil dibuat!');
+    }
 }

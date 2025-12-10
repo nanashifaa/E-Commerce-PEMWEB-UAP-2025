@@ -98,24 +98,7 @@
         </div>
     </div>
 
-    {{-- FILTERS --}}
-    <div class="max-w-7xl mx-auto px-4 md:px-10 mt-10">
-        <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-            <button class="px-5 py-2 rounded-full bg-gray-100 hover:bg-pink-100 hover:text-pink-700 text-sm font-medium transition whitespace-nowrap">Fashion Type ▾</button>
-            <button class="px-5 py-2 rounded-full bg-gray-100 hover:bg-pink-100 hover:text-pink-700 text-sm font-medium transition whitespace-nowrap">Price ▾</button>
-            <button class="px-5 py-2 rounded-full bg-gray-100 hover:bg-pink-100 hover:text-pink-700 text-sm font-medium transition whitespace-nowrap">Review ▾</button>
-            <button class="px-5 py-2 rounded-full bg-gray-100 hover:bg-pink-100 hover:text-pink-700 text-sm font-medium transition whitespace-nowrap">Color ▾</button>
-            <button class="px-5 py-2 rounded-full bg-gray-100 hover:bg-pink-100 hover:text-pink-700 text-sm font-medium transition whitespace-nowrap">Material ▾</button>
-            <button class="px-5 py-2 rounded-full bg-gray-100 hover:bg-pink-100 hover:text-pink-700 text-sm font-medium transition whitespace-nowrap">Offer ▾</button>
-            <button class="px-5 py-2 rounded-full bg-gray-100 hover:bg-pink-100 hover:text-pink-700 text-sm font-medium transition whitespace-nowrap">All Filters 📑</button>
-            
-            <div class="ml-auto">
-                <button class="px-5 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-sm font-medium flex items-center gap-2">
-                    Sort by ▾
-                </button>
-            </div>
-        </div>
-    </div>
+    {{-- FILTERS REMOVED --}}
 
     {{-- PRODUCT GRID --}}
     <div id="products" class="max-w-7xl mx-auto px-4 md:px-10 mt-10 mb-20">

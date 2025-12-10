@@ -37,25 +37,27 @@ class FashionProductSeeder extends Seeder
                 'price' => 125000,
                 'stock' => 50,
                 'category_id' => $catFashion,
-                'image' => 'products/kemeja_flannel_kotak_kotak.jpg'
+                'image' => 'products/blouse.jpg'
             ],
             [
                 'name' => 'Celana Kulot Linen Highwaist',
                 'slug' => 'celana-kulot-linen',
                 'description' => 'Celana kulot bahan linen rami, adem dan tidak menerawang.',
                 'price' => 89000,
+                'weight' => 300,
                 'stock' => 100,
                 'category_id' => $catFashion,
-                'image' => 'products/celana_chino_slim_fit.jpg'
+                'image' => 'products/kulot.jpg'
             ],
             [
                 'name' => 'Outer Bomber Crop Lilac',
                 'slug' => 'outer-bomber-crop',
                 'description' => 'Jaket bomber model crop warna lilac kekinian.',
                 'price' => 150000,
+                'weight' => 450,
                 'stock' => 25,
                 'category_id' => $catFashion,
-                'image' => 'products/jaket_bomber_casual.jpg'
+                'image' => 'products/bomber.jpg'
             ],
 
             // SHOES
@@ -64,9 +66,10 @@ class FashionProductSeeder extends Seeder
                 'slug' => 'sneakers-white-korean',
                 'description' => 'Sepatu sneakers putih sol tebal, empuk nyaman dipakai seharian.',
                 'price' => 199000,
+                'weight' => 800,
                 'stock' => 40,
                 'category_id' => $catShoes,
-                'image' => 'products/sepatu_sneakers_urban.jpg'
+                'image' => 'products/sneakers.jpg'
             ],
 
             // BEAUTY (Reusing household items as beauty tools proxies)
@@ -75,18 +78,20 @@ class FashionProductSeeder extends Seeder
                 'slug' => 'beauty-blender-set',
                 'description' => 'Set spons makeup lembut untuk hasil flawless.',
                 'price' => 35000,
+                'weight' => 50,
                 'stock' => 200,
                 'category_id' => $catBeauty,
-                'image' => 'products/blender_serbaguna.jpg' // "Blender" :D
+                'image' => 'products/sponge.jpg' // "Blender" :D
             ],
             [
                 'name' => 'Mixing Bowl Masker Set',
                 'slug' => 'mixing-bowl-masker',
                 'description' => 'Mangkuk stainless untuk meracik masker organik.',
                 'price' => 25000,
+                'weight' => 100,
                 'stock' => 150,
                 'category_id' => $catBeauty,
-                'image' => 'products/set_panci_stainless_steel.jpg' // "Panci" -> Bowl
+                'image' => 'products/bowl.jpg' // "Panci" -> Bowl
             ],
 
             // AKSESORIS
@@ -95,18 +100,20 @@ class FashionProductSeeder extends Seeder
                 'slug' => 'smart-bracelet-rosegold',
                 'description' => 'Gelang pintar dengan desain elegan warna rosegold.',
                 'price' => 250000,
+                'weight' => 150,
                 'stock' => 30,
                 'category_id' => $catAksesoris,
-                'image' => 'products/smartwatch_fit_pro.jpg'
+                'image' => 'products/bracelet.jpg'
             ],
             [
                 'name' => 'Earmuff Winter Fluffy',
                 'slug' => 'earmuff-winter',
                 'description' => 'Penutup telinga bulu halus, lucu untuk OOTD.',
                 'price' => 45000,
+                'weight' => 100,
                 'stock' => 60,
                 'category_id' => $catAksesoris,
-                'image' => 'products/headset_wireless_hd.jpg'
+                'image' => 'products/earmuff.jpg'
             ],
 
              // HIJAB
@@ -115,18 +122,20 @@ class FashionProductSeeder extends Seeder
                 'slug' => 'pashmina-plisket',
                 'description' => 'Pashmina full plisket lidi, mudah dibentuk tanpa setrika.',
                 'price' => 35000,
+                'weight' => 200,
                 'stock' => 120,
                 'category_id' => $catHijab,
-                'image' => 'products/kemeja_flannel_kotak_kotak.jpg' // Reusing flannel texture
+                'image' => 'products/pashmina.jpg' // Reusing flannel texture
             ],
              [
                 'name' => 'Bergo Maryam Diamond',
                 'slug' => 'bergo-maryam',
                 'description' => 'Hijab instan tali bahan diamond stretch.',
                 'price' => 25000,
+                'weight' => 200,
                 'stock' => 300,
                 'category_id' => $catHijab,
-                'image' => 'products/jaket_bomber_casual.jpg' // Reusing texture
+                'image' => 'products/bergo.jpg' // Reusing texture
             ],
         ];
 

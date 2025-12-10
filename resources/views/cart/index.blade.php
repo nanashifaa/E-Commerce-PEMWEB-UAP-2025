@@ -73,10 +73,14 @@
 
         {{-- TOTAL & CHECKOUT --}}
         <div class="mt-8 bg-white p-6 rounded-xl shadow border">
-            <div class="flex justify-between text-xl font-semibold text-gray-900 mb-4">
                 <span>Total</span>
                 <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
             </div>
+            
+            <a href="{{ route('checkout.cart') }}" class="block w-full text-center py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-xl text-lg font-medium shadow-md transition mt-4">
+                Lanjut ke Checkout
+            </a>
+        </div>
 
     @endif
 

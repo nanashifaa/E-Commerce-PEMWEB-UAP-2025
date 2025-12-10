@@ -66,6 +66,9 @@ Route::middleware(['auth', 'access:member'])->group(function () {
     Route::get('/checkout/{slug}', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
 
+    Route::get('/checkout-cart', [CheckoutController::class, 'cartCheckout'])->name('checkout.cart');
+    Route::post('/checkout-cart/process', [CheckoutController::class, 'processCart'])->name('checkout.cart.process');
+
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
