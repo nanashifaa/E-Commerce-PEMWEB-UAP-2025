@@ -18,11 +18,6 @@ class RoleAccess
 
         // Check user role
         if (!in_array($user->role, $roles)) {
-            \Illuminate\Support\Facades\Log::info('RoleAccess 403', [
-                'user_id' => $user->id,
-                'user_role' => $user->role,
-                'required_roles' => $roles
-            ]);
             abort(403, 'Unauthorized');
         }
 

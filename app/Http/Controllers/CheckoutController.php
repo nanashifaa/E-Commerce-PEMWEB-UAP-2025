@@ -39,23 +39,25 @@ class CheckoutController extends Controller
         $address_id = 'ADDR-' . strtoupper(Str::random(6));
         $payment_status = $request->payment_method === 'wallet' ? 'paid' : 'unpaid';
 
-        $transaction = Transaction::create([
-            'code'          => 'TRX-' . strtoupper(Str::random(10)),
-            'buyer_id'      => Auth::id(),
-            'store_id'      => $product->store_id,
-            'address'       => $request->address,
-            'address_id'    => $address_id,
-            'city'          => $request->city,
-            'postal_code'   => $request->postal_code,
-
-            'shipping'      => 'Standard Courier',
-            'shipping_type' => $request->shipping_type,
-            'shipping_cost' => $shipping_cost,
-
-            'tax'           => 0,
-            'grand_total'   => $grand_total,
-            'payment_status' => $payment_status,
-        ]);
+        // FIX: Manual Assignment to ensure all fields are saved (avoid mass assignment issues)
+        $transaction = new Transaction();
+        $transaction->code          = 'TRX-' . strtoupper(Str::random(10));
+        $transaction->buyer_id      = Auth::id();
+        $transaction->store_id      = $product->store_id;
+        $transaction->address       = $request->address;
+        $transaction->address_id    = $address_id;
+        $transaction->city          = $request->city;
+        $transaction->postal_code   = $request->postal_code;
+        
+        $transaction->shipping      = 'Standard Courier';
+        $transaction->shipping_type = $request->shipping_type;
+        $transaction->shipping_cost = $shipping_cost;
+        
+        $transaction->tax           = 0;
+        $transaction->grand_total   = $grand_total;
+        $transaction->payment_status = $payment_status;
+        
+        $transaction->save();
 
         TransactionDetail::create([
             'transaction_id' => $transaction->id,
@@ -175,32 +177,21 @@ class CheckoutController extends Controller
             $address_id = 'ADDR-' . strtoupper(Str::random(6));
             $payment_status = $request->payment_method === 'wallet' ? 'paid' : 'unpaid';
 
-            // DEBUGGING
-            // dd("STOP HERE: " . $storeId);
-
-            $trxData = [
-                'code'          => 'TRX-' . strtoupper(Str::random(10)),
-                'buyer_id'      => $user->id,
-                'store_id'      => $storeId,
-                'address'       => $request->address,
-                'address_id'    => $address_id,
-                'city'          => $request->city,
-                'postal_code'   => $request->postal_code,
-                'shipping'      => 'Standard Courier',
-                'shipping_type' => $request->shipping_type,
-                'shipping_cost' => $shipping_cost,
-                'tax'           => 0,
-                'grand_total'   => $grand_total,
-                'payment_status' => $payment_status,
-                'created_at'    => now(),
-                'updated_at'    => now(),
-            ];
-            
-            // Bypass Eloquent entirely to ensure fields are saved
-            $trxId = \Illuminate\Support\Facades\DB::table('transactions')->insertGetId($trxData);
-            
-            // Reload model for downstream logic
-            $transaction = Transaction::find($trxId);
+            $transaction = new Transaction();
+            $transaction->code = 'TRX-' . strtoupper(Str::random(10));
+            $transaction->buyer_id = $user->id;
+            $transaction->store_id = $storeId;
+            $transaction->address = $request->address;
+            $transaction->address_id = $address_id;
+            $transaction->city = $request->city;
+            $transaction->postal_code = $request->postal_code;
+            $transaction->shipping = 'Standard Courier';
+            $transaction->shipping_type = $request->shipping_type;
+            $transaction->shipping_cost = $shipping_cost;
+            $transaction->tax = 0;
+            $transaction->grand_total = $grand_total;
+            $transaction->payment_status = $payment_status;
+            $transaction->save();
 
             foreach($storeCarts as $c) {
                 TransactionDetail::create([

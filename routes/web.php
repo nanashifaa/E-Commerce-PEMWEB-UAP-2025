@@ -26,8 +26,6 @@ Route::get('/', function () {
     return view('welcome', compact('products'));
 });
 
-Route::get('/search', [ProductController::class, 'search'])->name('search');
-
 // USER DASHBOARD
 Route::get('/dashboard', function () {
     return view('dashboard');

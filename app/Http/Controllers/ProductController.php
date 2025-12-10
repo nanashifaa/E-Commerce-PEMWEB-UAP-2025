@@ -11,20 +11,9 @@ class ProductController extends Controller
 {
     /*
     |----------------------------------------------------------------------
+    | INDEX — LIST PRODUK SELLER
     |----------------------------------------------------------------------
     */
-    public function search(Request $request)
-    {
-        $query = $request->input('q');
-
-        $products = Product::with(['store', 'productImages'])
-            ->where('name', 'like', "%{$query}%")
-            ->latest()
-            ->get();
-
-        return view('welcome', compact('products'));
-    }
-
     public function index()
 {
     $store = auth()->user()->store;

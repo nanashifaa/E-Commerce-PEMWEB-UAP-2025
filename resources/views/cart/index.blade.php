@@ -36,23 +36,14 @@
                     <div class="flex items-center gap-3">
                         <form action="{{ route('cart.update', $cart->id) }}" method="POST">
                             @csrf
-                            <div class="flex items-center gap-2" x-data="{ qty: {{ $cart->qty }} }">
-                                <button type="button" @click="if(qty > 1) qty--" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition">
-                                    -
-                                </button>
-                                
+                            <div class="flex items-center gap-2">
                                 <input type="number" 
                                        name="qty" 
-                                       x-model="qty"
+                                       value="{{ $cart->qty }}" 
                                        min="1"
-                                       class="w-12 border-0 text-center font-semibold text-gray-700 focus:ring-0 p-0">
-                                
-                                <button type="button" @click="qty++" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition">
-                                    +
-                                </button>
-
+                                       class="w-16 border rounded-lg py-1 px-2 text-center">
                                 <button type="submit"
-                                        class="ml-2 px-3 py-1 bg-pink-500 text-white rounded-lg text-sm hover:bg-pink-600 transition">
+                                        class="px-3 py-1 bg-pink-500 text-white rounded-lg">
                                     Update
                                 </button>
                             </div>
