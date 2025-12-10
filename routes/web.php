@@ -5,7 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\HistoryController;
+
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\SellerProfileController;
@@ -22,7 +22,8 @@ use App\Http\Controllers\TransactionHistoryController;
 
 // PUBLIC
 Route::get('/', function () {
-    return view('welcome');
+    $products = \App\Models\Product::with(['store', 'productImages'])->latest()->take(8)->get();
+    return view('welcome', compact('products'));
 });
 
 // USER DASHBOARD
@@ -51,7 +52,7 @@ Route::middleware(['auth', 'access:member'])->group(function () {
 
     Route::get('/checkout/success', fn() => view('checkout.success'))->name('checkout.success');
 
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     Route::get('/history', [TransactionHistoryController::class, 'index'])->name('history.index');
     Route::get('/history/{id}', [TransactionHistoryController::class, 'show'])->name('history.show');
@@ -134,7 +135,8 @@ Route::middleware(['auth', 'access:seller'])->group(function () {
     Route::delete('/seller/products/{product}', [ProductController::class, 'destroy'])
         ->name('seller.products.delete');
 
-    Route::get('/seller/orders', [OrderController::class, 'index']);
+    Route::get('/seller/orders', [OrderController::class, 'index'])->name('seller.orders.index');
+    Route::get('/seller/orders/{id}', [OrderController::class, 'show'])->name('seller.orders.show');
     Route::get('/seller/withdrawals', [WithdrawalController::class, 'index']);
     Route::get('/seller/balance', [BalanceController::class, 'index']);
 });

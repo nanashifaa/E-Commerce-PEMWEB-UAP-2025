@@ -43,7 +43,6 @@ class CheckoutController extends Controller
             'code'          => 'TRX-' . strtoupper(Str::random(10)),
             'buyer_id'      => Auth::id(),
             'store_id'      => $product->store_id,
-
             'address'       => $request->address,
             'address_id'    => $address_id,
             'city'          => $request->city,
