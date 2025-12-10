@@ -12,12 +12,12 @@
 
         {{-- SEARCH --}}
         <div class="flex-1 max-w-2xl relative w-full">
-            <div class="relative group">
-                <input type="text" placeholder="Search for products, brands and shops" class="bg-gray-100 group-hover:bg-white border border-transparent group-hover:border-pink-200 outline-none w-full text-sm text-gray-700 px-4 py-3 rounded-full transition-all">
-                <button class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-pink-600 bg-transparent rounded-full">
+            <form action="{{ route('search') }}" method="GET" class="relative group">
+                <input type="text" name="q" placeholder="Search for products, brands and shops" value="{{ request('q') }}" class="bg-gray-100 group-hover:bg-white border border-transparent group-hover:border-pink-200 outline-none w-full text-sm text-gray-700 px-4 py-3 rounded-full transition-all">
+                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-pink-600 bg-transparent rounded-full">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </button>
-            </div>
+            </form>
         </div>
 
         {{-- ACCOUNT & CART --}}

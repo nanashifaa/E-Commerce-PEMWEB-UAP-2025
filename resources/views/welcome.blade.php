@@ -63,6 +63,7 @@
     </nav>
 
     {{-- HERO SECTION --}}
+    @if(!request()->has('q'))
     <div class="max-w-7xl mx-auto px-4 md:px-10 mt-8">
         <div class="relative bg-pink-50 rounded-3xl overflow-hidden min-h-[500px] flex items-center">
             
@@ -97,6 +98,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     {{-- FILTERS REMOVED --}}
 
