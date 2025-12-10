@@ -79,7 +79,7 @@
                     </a>
                     <p class="text-xs text-green-600 mt-1">Cheap n Use Selection</p>
                 </div>
-                <span class="font-bold text-lg text-gray-900">Rp {{ number_format($product->price/1000, 0) }}k</span>
+                <span class="font-bold text-lg text-gray-900">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
             </div>
 
             <div class="flex items-center gap-1 mb-4">
