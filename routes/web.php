@@ -101,8 +101,7 @@ Route::middleware(['auth', 'access:seller'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | ✅ CATEGORY CRUD (FINAL, LENGKAP, DAN SUDAH DITEMPATKAN BENAR)
-    |--------------------------------------------------------------------------
+    | ✅ CATEGO
     */
     Route::get('/seller/categories/create', [CategoryController::class, 'create'])
         ->name('seller.categories.create');
