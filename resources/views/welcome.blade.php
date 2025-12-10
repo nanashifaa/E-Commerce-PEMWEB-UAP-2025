@@ -93,12 +93,6 @@
                 </div>
 
                 {{-- Right Image (Model) --}}
-                <div class="w-full md:w-1/2 flex justify-center md:justify-end items-end h-[500px]">
-                    {{-- Zalora-style Model Image (Unsplash Source) --}}
-                    <img src="https://images.unsplash.com/photo-1615886251145-63529b46e819?q=80&w=1000&auto=format&fit=crop" 
-                         alt="Fashion Model" 
-                         class="h-full object-cover object-top drop-shadow-2xl mask-image-gradient-bottom">
-                </div>
 
             </div>
         </div>
