@@ -142,7 +142,8 @@ Route::middleware(['auth', 'access:seller'])->group(function () {
 
     Route::get('/seller/orders', [OrderController::class, 'index'])->name('seller.orders.index');
     Route::get('/seller/orders/{id}', [OrderController::class, 'show'])->name('seller.orders.show');
-    Route::get('/seller/withdrawals', [WithdrawalController::class, 'index']);
+    Route::get('/seller/withdrawals', [WithdrawalController::class, 'index'])->name('seller.withdrawals.index');
+    Route::post('/seller/withdrawals', [WithdrawalController::class, 'store'])->name('seller.withdrawals.store');
     Route::get('/seller/balance', [BalanceController::class, 'index']);
 });
 
