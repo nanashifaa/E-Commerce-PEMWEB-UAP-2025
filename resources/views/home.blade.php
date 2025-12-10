@@ -2,7 +2,7 @@
 
 @section('content')
 
-{{-- HERO SECTION --}}
+{{-- HERO SECTION --}} 
 <div class="max-w-7xl mx-auto px-4 md:px-10 mt-8">
     <div class="relative bg-pink-50 rounded-3xl overflow-hidden min-h-[500px] flex items-center">
         
