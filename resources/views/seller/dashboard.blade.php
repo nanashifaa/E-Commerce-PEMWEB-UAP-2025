@@ -113,7 +113,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                 </div>
-                <h3 class="text-3xl font-bold text-gray-900">Rp 12.450.000</h3>
+                <h3 class="text-3xl font-bold text-gray-900">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h3>
                 <p class="text-xs text-green-500 mt-2 flex items-center gap-1">
                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                     +5.4% from last month
@@ -121,15 +121,15 @@
             </div>
 
             {{-- Card 3 --}}
-            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition group">
-                 <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between mb-4">
+                   <p class="text-gray-500 font-medium text-sm">Active Products</p>
                     <p class="text-gray-500 font-medium text-sm">Active Products</p>
                      <div class="w-8 h-8 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center group-hover:scale-110 transition">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                     </div>
                 </div>
-                <h3 class="text-3xl font-bold text-gray-900">42</h3>
-                <p class="text-xs text-gray-400 mt-2">In 8 Categories</p>
+                <h3 class="text-3xl font-bold text-gray-900">{{ $activeProducts }}</h3>
+                <p class="text-xs text-gray-400 mt-2">Products ready to sell</p>
             </div>
 
             {{-- Card 4 --}}
@@ -140,7 +140,7 @@
                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                 </div>
-                <h3 class="text-3xl font-bold text-gray-900">6</h3>
+                <h3 class="text-3xl font-bold text-gray-900">{{ $pendingOrders }}</h3>
                  <p class="text-xs text-yellow-600 mt-2 font-medium">Needs Action</p>
             </div>
         </div>
@@ -164,30 +164,31 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
+                         @forelse ($latestOrders as $order)
                         <tr class="hover:bg-gray-50 transition">
-                            <td class="px-8 py-4 font-medium text-gray-900">#TRX-001</td>
-                            <td class="px-8 py-4 text-gray-600">Aulia Rahma</td>
-                            <td class="px-8 py-4 font-medium text-gray-900">Rp 250.000</td>
-                            <td class="px-8 py-4">
-                                <span class="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700 font-medium">
-                                    Pending
+                            <td class="px-8 py-4 font-medium text-gray-900">#{{ $order->code }}</td>
+                            <td class="px-8 py-4 text-gray-600">{{ $order->buyer->name ?? 'Customer' }}</td>
+                            <td class="px-8 py-4 font-medium text-gray-900">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</td>
+                            @php
+                                    $statusClass = $order->payment_status === 'paid'
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-yellow-100 text-yellow-700';
+                                @endphp
+                                <span class="px-3 py-1 text-xs rounded-full font-medium {{ $statusClass }}">
+                                    {{ ucfirst($order->payment_status) }} 
                                 </span>
                             </td>
                             <td class="px-8 py-4 text-right">
-                                <button class="text-gray-400 hover:text-pink-600 transition">
+                                <a href="{{ route('seller.orders.show', $order->id) }}" class="text-gray-400 hover:text-pink-600 transition">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                </button>
+                                </a>
                             </td>
                         </tr>
-                         <tr class="hover:bg-gray-50 transition">
-                            <td class="px-8 py-4 font-medium text-gray-900">#TRX-002</td>
-                            <td class="px-8 py-4 text-gray-600">Nadya Putri</td>
-                            <td class="px-8 py-4 font-medium text-gray-900">Rp 480.000</td>
-                            <td class="px-8 py-4">
-                                <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700 font-medium">
-                                    Completed
-                                </span>
-                            </td>
+                          @empty
+                        <tr>
+                            <td colspan="5" class="px-8 py-6 text-center text-gray-500">Belum ada pesanan terbaru.</td>
+                        </tr>
+                        @endforelse
                             <td class="px-8 py-4 text-right">
                                 <button class="text-gray-400 hover:text-pink-600 transition">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
