@@ -4,14 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'Cheap n Use') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; }
     </style>
 </head>
-<body class="bg-gray-50">
-
 <body class="bg-gray-50">
 
     {{-- NAVBAR --}}
@@ -61,6 +59,26 @@
             </div>
         </div>
     </nav>
+
+    {{-- FLASH MESSAGE --}}
+    @if (session('success'))
+        <div class="max-w-7xl mx-auto px-4 md:px-10 mt-6 z-50 relative">
+             <div class="bg-green-50 border-l-4 border-green-500 p-4 shadow-md rounded-r-md">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-green-700 font-medium">
+                            {{ session('success') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     {{-- HERO SECTION --}}
     <div class="max-w-7xl mx-auto px-4 md:px-10 mt-8">

@@ -29,8 +29,8 @@ class CartController extends Controller
         ]);
     }
 
-    // ARAHKAN USER KE HALAMAN KERANJANG
-    return redirect()->route('cart.index')->with('success', 'Produk berhasil ditambahkan!');
+    // KEMBALI KE HALAMAN SEBELUMNYA
+    return back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
 }
 
 
