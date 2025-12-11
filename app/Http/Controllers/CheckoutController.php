@@ -11,6 +11,10 @@ use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
+    // ============================================================
+    // SINGLE PRODUCT CHECKOUT
+    // ============================================================
+
     public function index($slug)
     {
         $product = Product::with(['productImages', 'store'])->where('slug', $slug)->firstOrFail();
@@ -31,34 +35,30 @@ class CheckoutController extends Controller
         $product = Product::findOrFail($request->product_id);
 
         $shipping_cost = $request->shipping_type === 'express' ? 20000 : 10000;
-
         $subtotal = $product->price;
         $grand_total = $subtotal + $shipping_cost;
 
         $address_id = 'ADDR-' . strtoupper(Str::random(6));
         $payment_status = $request->payment_method === 'wallet' ? 'paid' : 'unpaid';
 
-        // Buat Transaction
-        $transaction = new Transaction();
-        $transaction->code          = 'TRX-' . strtoupper(Str::random(10));
-        $transaction->buyer_id      = Auth::id();
-        $transaction->store_id      = $product->store_id;
-        $transaction->address       = $request->address;
-        $transaction->address_id    = $address_id;
-        $transaction->city          = $request->city;
-        $transaction->postal_code   = $request->postal_code;
-        
-        $transaction->shipping      = 'Standard Courier';
-        $transaction->shipping_type = $request->shipping_type;
-        $transaction->shipping_cost = $shipping_cost;
-        
-        $transaction->tax           = 0;
-        $transaction->grand_total   = $grand_total;
-        $transaction->payment_status = $payment_status;
-        
-        $transaction->save();
+        // Create transaction
+        $transaction = Transaction::create([
+            'code'          => 'TRX-' . strtoupper(Str::random(10)),
+            'buyer_id'      => Auth::id(),
+            'store_id'      => $product->store_id,
+            'address'       => $request->address,
+            'address_id'    => $address_id,
+            'city'          => $request->city,
+            'postal_code'   => $request->postal_code,
+            'shipping'      => 'Standard Courier',
+            'shipping_type' => $request->shipping_type,
+            'shipping_cost' => $shipping_cost,
+            'tax'           => 0,
+            'grand_total'   => $grand_total,
+            'payment_status'=> $payment_status,
+        ]);
 
-        // Buat Transaction Detail
+        // Save detail
         TransactionDetail::create([
             'transaction_id' => $transaction->id,
             'product_id'     => $product->id,
@@ -66,48 +66,75 @@ class CheckoutController extends Controller
             'subtotal'       => $subtotal,
         ]);
 
-        // Handle Payment Method
+
+        // ============================================================
+        // PAYMENT: WALLET
+        // ============================================================
+
         if ($request->payment_method === 'wallet') {
+
             $user = auth()->user();
-            
-            // Check balance
+
             if ($user->balance < $grand_total) {
                 return back()->withErrors("Saldo tidak cukup untuk pembayaran.");
             }
 
-            // Kurangi saldo
+            // Deduct wallet
             $user->balance -= $grand_total;
             $user->save();
 
-            // Update status transaksi menjadi paid
-            $transaction->payment_status = 'paid';
-            $transaction->save();
+            // Mark transaction as paid
+            $transaction->update(['payment_status' => 'paid']);
+
+            // ============= ADD STORE INCOME (FINAL FIX) =============
+            $store = $transaction->store;
+            $storeBalance = $store->storeBalance()->firstOrCreate(
+                ['store_id' => $store->id], // FIX TERPENTING
+                ['balance' => 0]
+            );
+
+            $storeBalance->increment('balance', $grand_total);
+
+            $storeBalance->storeBalanceHistories()->create([
+                'type'           => 'income',
+                'amount'         => $grand_total,
+                'remarks'        => 'Income from Transaction ' . $transaction->code,
+                'reference_type' => 'transaction',
+                'reference_id'   => $transaction->id
+            ]);
+            // =======================================================
 
             return redirect('/checkout/success')->with('success', 'Pembayaran wallet berhasil!');
         }
 
+        // ============================================================
+        // PAYMENT: VA
+        // ============================================================
+
         if ($request->payment_method === 'va') {
             return redirect('/payment?trx=' . $transaction->id)
-                    ->with('success', 'Silakan selesaikan pembayaran VA.');
+                ->with('success', 'Silakan selesaikan pembayaran VA.');
         }
-        
+
         return redirect('/checkout/success')->with('success', 'Transaksi berhasil dibuat.');
     }
+
+
+    // ============================================================
+    // CART CHECKOUT (MULTI-TOKO SUPPORT)
+    // ============================================================
 
     public function cartCheckout()
     {
         $carts = \App\Models\Cart::with(['product.store', 'product.productImages'])
-                    ->where('user_id', Auth::id())
-                    ->get();
-        
-        if($carts->isEmpty()) {
+            ->where('user_id', Auth::id())
+            ->get();
+
+        if ($carts->isEmpty()) {
             return redirect()->route('cart.index')->withErrors('Keranjang masih kosong.');
         }
 
-        $total = 0;
-        foreach($carts as $c) {
-            $total += $c->qty * $c->product->price;
-        }
+        $total = $carts->sum(fn($c) => $c->qty * $c->product->price);
 
         return view('checkout.cart', compact('carts', 'total'));
     }
@@ -124,68 +151,68 @@ class CheckoutController extends Controller
 
         $user = Auth::user();
         $carts = \App\Models\Cart::with(['product.store'])
-                    ->where('user_id', $user->id)
-                    ->get();
+            ->where('user_id', $user->id)
+            ->get();
 
-        if($carts->isEmpty()) {
-            return redirect()->back()->withErrors('Keranjang kosong.');
+        if ($carts->isEmpty()) {
+            return back()->withErrors("Keranjang kosong.");
         }
 
-        // Group cart items by store (1 transaksi per toko)
-        $cartsByStore = $carts->groupBy(fn($cart) => $cart->product->store_id);
+        $cartsByStore = $carts->groupBy(fn($c) => $c->product->store_id);
+
         $totalPaymentNeeded = 0;
-        $transactionsCreated = [];
 
-        // 1. Calculate total payment needed
-        foreach($cartsByStore as $storeId => $storeCarts) {
-            $subtotalStore = 0;
-            foreach($storeCarts as $c) {
-                $subtotalStore += $c->qty * $c->product->price;
-            }
+        foreach ($cartsByStore as $storeCarts) {
+            $subtotal = $storeCarts->sum(fn($c) => $c->qty * $c->product->price);
             $shipping_cost = $request->shipping_type === 'express' ? 20000 : 10000;
-            $totalPaymentNeeded += $subtotalStore + $shipping_cost;
+            $totalPaymentNeeded += $subtotal + $shipping_cost;
         }
 
-        // 2. Check balance and deduct if wallet payment
+        // Wallet payment
         if ($request->payment_method === 'wallet') {
+
             if ($user->balance < $totalPaymentNeeded) {
-                return back()->withErrors("Saldo tidak cukup. Total yang dibutuhkan: Rp " . number_format($totalPaymentNeeded, 0, ',', '.'));
+                return back()->withErrors("Saldo tidak cukup.");
             }
+
             $user->balance -= $totalPaymentNeeded;
             $user->save();
         }
 
-        // 3. Create transactions for each store
-        foreach($cartsByStore as $storeId => $storeCarts) {
-            $subtotalStore = 0;
-            foreach($storeCarts as $c) {
-                $subtotalStore += $c->qty * $c->product->price;
-            }
-            $shipping_cost = $request->shipping_type === 'express' ? 20000 : 10000;
-            $grand_total = $subtotalStore + $shipping_cost;
+        $transactionsCreated = [];
 
-            $address_id = 'ADDR-' . strtoupper(Str::random(6));
+
+        // ============================================================
+        // CREATE TRANSACTIONS PER STORE
+        // ============================================================
+
+        foreach ($cartsByStore as $storeId => $storeCarts) {
+
+            $subtotal = $storeCarts->sum(fn($c) => $c->qty * $c->product->price);
+            $shipping_cost = $request->shipping_type === 'express' ? 20000 : 10000;
+            $grand_total = $subtotal + $shipping_cost;
+
             $payment_status = $request->payment_method === 'wallet' ? 'paid' : 'unpaid';
 
             // Create transaction
-            $transaction = new Transaction();
-            $transaction->code = 'TRX-' . strtoupper(Str::random(10));
-            $transaction->buyer_id = $user->id;
-            $transaction->store_id = $storeId;
-            $transaction->address = $request->address;
-            $transaction->address_id = $address_id;
-            $transaction->city = $request->city;
-            $transaction->postal_code = $request->postal_code;
-            $transaction->shipping = 'Standard Courier';
-            $transaction->shipping_type = $request->shipping_type;
-            $transaction->shipping_cost = $shipping_cost;
-            $transaction->tax = 0;
-            $transaction->grand_total = $grand_total;
-            $transaction->payment_status = $payment_status;
-            $transaction->save();
+            $transaction = Transaction::create([
+                'code'          => 'TRX-' . strtoupper(Str::random(10)),
+                'buyer_id'      => $user->id,
+                'store_id'      => $storeId,
+                'address'       => $request->address,
+                'address_id'    => 'ADDR-' . strtoupper(Str::random(6)),
+                'city'          => $request->city,
+                'postal_code'   => $request->postal_code,
+                'shipping'      => 'Standard Courier',
+                'shipping_type' => $request->shipping_type,
+                'shipping_cost' => $shipping_cost,
+                'tax'           => 0,
+                'grand_total'   => $grand_total,
+                'payment_status'=> $payment_status,
+            ]);
 
-            // Create transaction details
-            foreach($storeCarts as $c) {
+            // Save detail
+            foreach ($storeCarts as $c) {
                 TransactionDetail::create([
                     'transaction_id' => $transaction->id,
                     'product_id'     => $c->product_id,
@@ -194,16 +221,35 @@ class CheckoutController extends Controller
                 ]);
             }
 
+            // ============= ADD STORE INCOME (FINAL FIX) =============
+            if ($payment_status === 'paid') {
+
+                $store = $transaction->store;
+
+                $storeBalance = $store->storeBalance()->firstOrCreate(
+                    ['store_id' => $store->id], // FIX TERPENTING
+                    ['balance' => 0]
+                );
+
+                $storeBalance->increment('balance', $grand_total);
+
+                $storeBalance->storeBalanceHistories()->create([
+                    'type'           => 'income',
+                    'amount'         => $grand_total,
+                    'remarks'        => 'Income from Transaction ' . $transaction->code,
+                    'reference_type' => 'transaction',
+                    'reference_id'   => $transaction->id
+                ]);
+            }
+
             $transactionsCreated[] = $transaction->id;
         }
 
-        // 4. Clear cart after successful checkout
+
         \App\Models\Cart::where('user_id', $user->id)->delete();
 
-        // 5. Redirect based on payment method
         if ($request->payment_method === 'va') {
-            return redirect('/payment?trx=' . $transactionsCreated[0])
-                    ->with('success', 'Silakan selesaikan pembayaran VA.');
+            return redirect('/payment?trx=' . $transactionsCreated[0]);
         }
 
         return redirect('/checkout/success')->with('success', 'Semua transaksi berhasil dibuat!');

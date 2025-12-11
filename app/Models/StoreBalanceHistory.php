@@ -6,14 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class StoreBalanceHistory extends Model
 {
-
     protected $fillable = [
         'store_balance_id',
         'type',
-        'reference_id',
-        'reference_type',
         'amount',
         'remarks',
+        'reference_type',
+        'reference_id'
     ];
 
     public function storeBalance()

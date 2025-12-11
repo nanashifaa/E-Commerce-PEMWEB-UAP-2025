@@ -71,7 +71,9 @@
                                     </div>
                                 </td>
                                 <td class="py-5 px-6">
-                                    <span class="font-bold text-gray-900">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+                                    <span class="font-bold text-gray-900">
+                                        Rp {{ number_format($order->grand_total, 0, ',', '.') }}
+                                    </span>
                                 </td>
 
                                 <td class="py-5 px-6">

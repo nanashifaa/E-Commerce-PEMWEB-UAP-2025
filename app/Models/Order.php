@@ -6,23 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    protected $table = 'transactions'; // WAJIB!
+    protected $table = 'transactions';
 
     protected $fillable = [
         'buyer_id',
         'store_id',
         'code',
-        'address',          // ← TAMBAHKAN
-        'address_id',       // ← TAMBAHKAN
-        'city',             // ← TAMBAHKAN
-        'postal_code',      // ← TAMBAHKAN
-        'shipping',         // ← TAMBAHKAN
-        'shipping_type',    // ← TAMBAHKAN
-        'shipping_cost',    // ← TAMBAHKAN
-        'tax',              // ← TAMBAHKAN
+        'address',
+        'address_id',
+        'city',
+        'postal_code',
+        'shipping',
+        'shipping_type',
+        'shipping_cost',
+        'tax',
         'grand_total',
         'payment_status',
-        'tracking_number',  // ← OPTIONAL
+        'tracking_number',
     ];
 
     public function buyer()
@@ -33,5 +33,10 @@ class Order extends Model
     public function store()
     {
         return $this->belongsTo(Store::class, 'store_id');
+    }
+
+    public function details()
+    {
+        return $this->hasMany(TransactionDetail::class, 'transaction_id');
     }
 }

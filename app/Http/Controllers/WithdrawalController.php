@@ -9,23 +9,42 @@ class WithdrawalController extends Controller
     public function index()
     {
         $store = auth()->user()->store;
-        
-        // Get balance
-        $balance = $store->storeBalance()->firstOrCreate([], ['balance' => 0]);
-        
-        // Get withdrawals history
-        $withdrawals = $store->storeBalance->withdrawals()->latest()->get();
 
-        return view('seller.withdrawals', compact('balance', 'withdrawals'));
+        // Ambil / buat saldo toko
+        $balance = $store->storeBalance()->firstOrCreate(['store_id' => $store->id], ['balance' => 0]);
+
+        // Total income dari history
+        $totalIncome = $balance->storeBalanceHistories()
+            ->where('type', 'income')
+            ->sum('amount');
+
+        // Total withdrawal / debit
+        $totalWithdrawals = $balance->storeBalanceHistories()
+            ->whereIn('type', ['debit', 'withdraw'])
+            ->sum('amount');
+
+        // Saldo akhir berdasarkan perhitungan
+        $computedBalance = $totalIncome - $totalWithdrawals;
+
+        // Riwayat withdrawal
+        $withdrawals = $balance->withdrawals()->latest()->get();
+
+        return view('seller.withdrawals', compact(
+            'balance',
+            'withdrawals',
+            'totalIncome',
+            'totalWithdrawals',
+            'computedBalance'
+        ));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'amount' => 'required|numeric|min:10000',
-            'bank_name' => 'required|string',
-            'account_number' => 'required|string',
-            'account_name' => 'required|string',
+            'bank_name' => 'required',
+            'account_number' => 'required',
+            'account_name' => 'required',
         ]);
 
         $store = auth()->user()->store;
@@ -35,32 +54,27 @@ class WithdrawalController extends Controller
             return back()->with('error', 'Insufficient balance!');
         }
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($balance, $request) {
-            // Deduct balance
+        \DB::transaction(function () use ($balance, $request) {
+
             $balance->decrement('balance', $request->amount);
 
-            // Create history
-            $balance->storeBalanceHistories()->create([
-                'type' => 'debit', // Out
+            $history = $balance->storeBalanceHistories()->create([
+                'type' => 'debit',
                 'amount' => $request->amount,
-                'remarks' => 'Withdrawal Request to ' . $request->bank_name . ' (' . $request->account_number . ') ' . $request->account_name,
-                'reference_type' => 'withdrawal',
-                'reference_id' => 0 // Temporary
+                'remarks' => "Withdrawal request",
             ]);
 
-            // Create withdrawal request
-            $withdrawal = $balance->withdrawals()->create([
+            $withdraw = $balance->withdrawals()->create([
                 'amount' => $request->amount,
-                'bank_name' => $request->bank_name,
                 'bank_account_number' => $request->account_number,
                 'bank_account_name' => $request->account_name,
+                'bank_name' => $request->bank_name,
                 'status' => 'pending'
             ]);
-            
-            // Update reference in history
-            $balance->storeBalanceHistories()->latest()->first()->update(['reference_id' => $withdrawal->id]);
+
+            $history->update(['reference_id' => $withdraw->id]);
         });
 
-        return back()->with('success', 'Withdrawal request submitted successfully!');
+        return back()->with('success', 'Withdrawal request submitted!');
     }
 }
