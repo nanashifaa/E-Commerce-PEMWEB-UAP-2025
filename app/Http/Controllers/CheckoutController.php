@@ -68,12 +68,20 @@ class CheckoutController extends Controller
 
         // ====== TAMBAHKAN ORDER UNTUK SELLER ======
         Order::create([
-            'seller_id' => $product->store->user_id,
-            'buyer_id'  => Auth::id(),
-            'code'      => $transaction->code,
-            'total'     => $grand_total,
-            'status'    => 'pending',
-        ]);
+    'buyer_id'       => Auth::id(),
+    'store_id'       => $product->store_id,
+    'code'           => $transaction->code,
+    'address'        => $request->address,
+    'address_id'     => $address_id,
+    'city'           => $request->city,
+    'postal_code'    => $request->postal_code,
+    'shipping'       => 'Standard Courier',
+    'shipping_type'  => $request->shipping_type,
+    'shipping_cost'  => $shipping_cost,
+    'tax'            => 0,
+    'grand_total'    => $grand_total,
+    'payment_status' => $payment_status,
+]);
 
        if ($request->payment_method === 'wallet') {
 
@@ -204,12 +212,20 @@ class CheckoutController extends Controller
 
              // Order untuk Seller
              Order::create([
-                'seller_id' => $storeCarts->first()->product->store->user_id,
-                'buyer_id'  => $user->id,
-                'code'      => $transaction->code,
-                'total'     => $grand_total,
-                'status'    => 'pending',
-            ]);
+    'buyer_id'       => $user->id,
+    'store_id'       => $storeId,
+    'code'           => $transaction->code,
+    'address'        => $request->address,        // ← TAMBAHKAN
+    'address_id'     => $address_id,              // ← TAMBAHKAN
+    'city'           => $request->city,           // ← TAMBAHKAN
+    'postal_code'    => $request->postal_code,    // ← TAMBAHKAN
+    'shipping'       => 'Standard Courier',       // ← TAMBAHKAN
+    'shipping_type'  => $request->shipping_type,  // ← TAMBAHKAN
+    'shipping_cost'  => $shipping_cost,           // ← TAMBAHKAN
+    'tax'            => 0,                        // ← TAMBAHKAN
+    'grand_total'    => $grand_total,
+    'payment_status' => $payment_status,
+]);
 
             $transactionsCreated[] = $transaction->id;
         }

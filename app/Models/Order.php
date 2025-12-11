@@ -12,8 +12,17 @@ class Order extends Model
         'buyer_id',
         'store_id',
         'code',
+        'address',          // ← TAMBAHKAN
+        'address_id',       // ← TAMBAHKAN
+        'city',             // ← TAMBAHKAN
+        'postal_code',      // ← TAMBAHKAN
+        'shipping',         // ← TAMBAHKAN
+        'shipping_type',    // ← TAMBAHKAN
+        'shipping_cost',    // ← TAMBAHKAN
+        'tax',              // ← TAMBAHKAN
         'grand_total',
         'payment_status',
+        'tracking_number',  // ← OPTIONAL
     ];
 
     public function buyer()

@@ -124,6 +124,9 @@ Route::middleware(['auth', 'access:seller'])->group(function () {
     Route::get('/seller/products', [ProductController::class, 'index'])
         ->name('seller.products.index');
 
+    // Route untuk search produk (untuk pembeli/guest)
+Route::get('/search', [ProductController::class, 'search'])->name('product.search');
+
     Route::get('/seller/products/create', [ProductController::class, 'create'])
         ->name('seller.products.create');
 

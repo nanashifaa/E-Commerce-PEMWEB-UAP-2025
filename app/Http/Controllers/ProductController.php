@@ -159,4 +159,29 @@ class ProductController extends Controller
 
         return back()->with('success', 'Product berhasil dihapus.');
     }
+
+    /*
+    |----------------------------------------------------------------------
+    | SEARCH — PENCARIAN PRODUK UNTUK   PEMBELI
+    |----------------------------------------------------------------------
+    */
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+
+        if (empty($query)) {
+            return redirect('/')->with('info', 'Masukkan kata kunci pencarian');
+        }
+
+        $products = Product::with(['productImages', 'store', 'productCategory'])
+            ->where(function($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%")
+                  ->orWhere('description', 'LIKE', "%{$query}%");
+            })
+            ->where('stock', '>', 0) // hanya produk yang ada stocknya
+            ->latest()
+            ->paginate(20);
+
+        return view('product.search', compact('products', 'query'));
+    }
 }

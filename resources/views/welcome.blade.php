@@ -129,13 +129,6 @@
                     <span class="font-bold text-lg text-gray-900">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
                 </div>
 
-                <div class="flex items-center gap-1 mb-4">
-                    <div class="flex text-yellow-400 text-xs">
-                        ★★★★★
-                    </div>
-                    <span class="text-xs text-gray-400">(121)</span>
-                </div>
-
                 {{-- Add to Cart --}}
                 <form action="{{ route('cart.add') }}" method="POST">
                     @csrf
