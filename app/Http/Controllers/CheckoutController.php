@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
-use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -39,7 +38,7 @@ class CheckoutController extends Controller
         $address_id = 'ADDR-' . strtoupper(Str::random(6));
         $payment_status = $request->payment_method === 'wallet' ? 'paid' : 'unpaid';
 
-        // FIX: Manual Assignment to ensure all fields are saved (avoid mass assignment issues)
+        // Buat Transaction
         $transaction = new Transaction();
         $transaction->code          = 'TRX-' . strtoupper(Str::random(10));
         $transaction->buyer_id      = Auth::id();
@@ -59,6 +58,7 @@ class CheckoutController extends Controller
         
         $transaction->save();
 
+        // Buat Transaction Detail
         TransactionDetail::create([
             'transaction_id' => $transaction->id,
             'product_id'     => $product->id,
@@ -66,49 +66,32 @@ class CheckoutController extends Controller
             'subtotal'       => $subtotal,
         ]);
 
-        // ====== TAMBAHKAN ORDER UNTUK SELLER ======
-        Order::create([
-    'buyer_id'       => Auth::id(),
-    'store_id'       => $product->store_id,
-    'code'           => $transaction->code,
-    'address'        => $request->address,
-    'address_id'     => $address_id,
-    'city'           => $request->city,
-    'postal_code'    => $request->postal_code,
-    'shipping'       => 'Standard Courier',
-    'shipping_type'  => $request->shipping_type,
-    'shipping_cost'  => $shipping_cost,
-    'tax'            => 0,
-    'grand_total'    => $grand_total,
-    'payment_status' => $payment_status,
-]);
+        // Handle Payment Method
+        if ($request->payment_method === 'wallet') {
+            $user = auth()->user();
+            
+            // Check balance
+            if ($user->balance < $grand_total) {
+                return back()->withErrors("Saldo tidak cukup untuk pembayaran.");
+            }
 
-       if ($request->payment_method === 'wallet') {
+            // Kurangi saldo
+            $user->balance -= $grand_total;
+            $user->save();
 
-    // Kurangi saldo user (kalau mau)
-    $user = auth()->user();
-    if ($user->balance < $grand_total) {
-        return back()->withErrors("Saldo tidak cukup untuk pembayaran.");
-    }
+            // Update status transaksi menjadi paid
+            $transaction->payment_status = 'paid';
+            $transaction->save();
 
-    // KURANGI SALDO
-    $user->balance -= $grand_total;
-    $user->save();
-
-    // SET STATUS TRANSAKSI MENJADI PAID
-    $transaction->payment_status = 'paid';
-    $transaction->save();
-
-    return redirect('/checkout/success')->with('success', 'Pembayaran wallet berhasil!');
-}
-
+            return redirect('/checkout/success')->with('success', 'Pembayaran wallet berhasil!');
+        }
 
         if ($request->payment_method === 'va') {
             return redirect('/payment?trx=' . $transaction->id)
                     ->with('success', 'Silakan selesaikan pembayaran VA.');
         }
         
-        return redirect('/dashboard')->with('success', 'Transaksi berhasil dibuat.');
+        return redirect('/checkout/success')->with('success', 'Transaksi berhasil dibuat.');
     }
 
     public function cartCheckout()
@@ -148,14 +131,12 @@ class CheckoutController extends Controller
             return redirect()->back()->withErrors('Keranjang kosong.');
         }
 
-        // Hitung Grand Total (Subtotal produk + Ongkir per Toko??)
-        // Simplifikasi: 1 Transaksi per Toko.
-        
+        // Group cart items by store (1 transaksi per toko)
         $cartsByStore = $carts->groupBy(fn($cart) => $cart->product->store_id);
         $totalPaymentNeeded = 0;
         $transactionsCreated = [];
 
-        // 1. Calculate Total first to check balance if Wallet
+        // 1. Calculate total payment needed
         foreach($cartsByStore as $storeId => $storeCarts) {
             $subtotalStore = 0;
             foreach($storeCarts as $c) {
@@ -165,15 +146,16 @@ class CheckoutController extends Controller
             $totalPaymentNeeded += $subtotalStore + $shipping_cost;
         }
 
+        // 2. Check balance and deduct if wallet payment
         if ($request->payment_method === 'wallet') {
             if ($user->balance < $totalPaymentNeeded) {
-                return back()->withErrors("Saldo tidak cukup for total Rp " . number_format($totalPaymentNeeded));
+                return back()->withErrors("Saldo tidak cukup. Total yang dibutuhkan: Rp " . number_format($totalPaymentNeeded, 0, ',', '.'));
             }
             $user->balance -= $totalPaymentNeeded;
             $user->save();
         }
 
-        // 2. Process Transactions
+        // 3. Create transactions for each store
         foreach($cartsByStore as $storeId => $storeCarts) {
             $subtotalStore = 0;
             foreach($storeCarts as $c) {
@@ -185,6 +167,7 @@ class CheckoutController extends Controller
             $address_id = 'ADDR-' . strtoupper(Str::random(6));
             $payment_status = $request->payment_method === 'wallet' ? 'paid' : 'unpaid';
 
+            // Create transaction
             $transaction = new Transaction();
             $transaction->code = 'TRX-' . strtoupper(Str::random(10));
             $transaction->buyer_id = $user->id;
@@ -201,6 +184,7 @@ class CheckoutController extends Controller
             $transaction->payment_status = $payment_status;
             $transaction->save();
 
+            // Create transaction details
             foreach($storeCarts as $c) {
                 TransactionDetail::create([
                     'transaction_id' => $transaction->id,
@@ -210,33 +194,15 @@ class CheckoutController extends Controller
                 ]);
             }
 
-             // Order untuk Seller
-             Order::create([
-    'buyer_id'       => $user->id,
-    'store_id'       => $storeId,
-    'code'           => $transaction->code,
-    'address'        => $request->address,        // ← TAMBAHKAN
-    'address_id'     => $address_id,              // ← TAMBAHKAN
-    'city'           => $request->city,           // ← TAMBAHKAN
-    'postal_code'    => $request->postal_code,    // ← TAMBAHKAN
-    'shipping'       => 'Standard Courier',       // ← TAMBAHKAN
-    'shipping_type'  => $request->shipping_type,  // ← TAMBAHKAN
-    'shipping_cost'  => $shipping_cost,           // ← TAMBAHKAN
-    'tax'            => 0,                        // ← TAMBAHKAN
-    'grand_total'    => $grand_total,
-    'payment_status' => $payment_status,
-]);
-
             $transactionsCreated[] = $transaction->id;
         }
 
-        // Clear Cart
+        // 4. Clear cart after successful checkout
         \App\Models\Cart::where('user_id', $user->id)->delete();
 
+        // 5. Redirect based on payment method
         if ($request->payment_method === 'va') {
-            // Redirect to payment page of the FIRST transaction (simplification)
-            // Or a bulk payment page? Given existing logic, let's just pick one or show success.
-             return redirect('/payment?trx=' . $transactionsCreated[0])
+            return redirect('/payment?trx=' . $transactionsCreated[0])
                     ->with('success', 'Silakan selesaikan pembayaran VA.');
         }
 

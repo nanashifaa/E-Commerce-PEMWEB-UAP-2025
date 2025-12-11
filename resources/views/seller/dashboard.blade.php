@@ -37,7 +37,7 @@
         {{-- WELCOME MESSAGE --}}
         <div class="mb-10 text-center md:text-left">
             <h2 class="text-3xl font-bold text-gray-800">
-                Hello, {{ Auth::user()->name }} 👋
+                Hello, {{ Auth::user()->name }}
             </h2>
             <p class="text-gray-500 mt-1">Here is what's happening in your store today.</p>
         </div>
