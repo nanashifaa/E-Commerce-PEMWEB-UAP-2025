@@ -53,6 +53,9 @@
                 Daftarkan Toko Sekarang
             </a>
         </div>
+        <div class="mb-10 bg-white border border-gray-100 p-6 rounded-2xl shadow-sm">
+            <p class="text-gray-700 text-sm">Statistik dan pesanan terbaru akan muncul setelah kamu mendaftarkan toko.</p>
+        </div>
         @else
         <div class="mb-10 bg-white border border-gray-100 p-6 rounded-2xl shadow-sm flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -77,8 +80,13 @@
             </div>
             {{-- Edit Button could go here --}}
         </div>
-        @endif
+       
 
+        @if(!$store->is_verified)
+        <div class="mb-10 bg-yellow-50 border border-yellow-200 text-yellow-800 p-6 rounded-2xl shadow-sm">
+            <p class="text-sm">Akun seller kamu belum terverifikasi. Mohon menunggu persetujuan admin sebelum dapat melihat statistik dan pesanan terbaru.</p>
+        </div>
+        @else
         {{-- STATS GRID --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             
@@ -190,7 +198,8 @@
                 </table>
             </div>
         </div>
-
+    @endif 
+    @endif
     </div>
 </div>
 
