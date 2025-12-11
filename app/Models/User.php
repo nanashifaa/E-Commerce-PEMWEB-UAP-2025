@@ -52,6 +52,15 @@ class User extends Authenticatable
         return $this->role === 'seller';
     }
 
+     public function dashboardRedirectPath(): string
+    {
+        return match ($this->role) {
+            'admin' => route('admin.dashboard'),
+            'seller' => route('seller.dashboard'),
+            default => route('home'),
+        };
+    }
+
     public function store()
     {
         return $this->hasOne(Store::class);

@@ -45,13 +45,14 @@
         {{-- ROLE DROPDOWN --}}
         <div class="mb-4">
             <label class="block mb-1 text-sm font-medium text-gray-700">Register as</label>
-            <select 
+             <select
                 name="role" 
                 required
                 class="w-full p-3 rounded-lg border border-gray-300 bg-pink-50/40 focus:ring-2 focus:ring-pink-300 transition">
-                <option value="" disabled selected>Pilih peran</option>
-                <option value="buyer">Buyer</option>
-                <option value="seller">Seller</option>
+                <option value="" disabled {{ old('role') ? '' : 'selected' }}>Pilih peran</option>
+                <option value="member" {{ old('role') === 'member' ? 'selected' : '' }}>Member</option>
+                <option value="seller" {{ old('role') === 'seller' ? 'selected' : '' }}>Seller</option>
+                <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
             </select>
         </div>
 
