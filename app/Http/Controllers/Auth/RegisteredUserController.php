@@ -47,6 +47,12 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect()->intended($user->dashboardRedirectPath());
+        $redirectPath = match ($user->role) {
+            'admin' => route('admin.dashboard'),
+            'seller' => route('seller.dashboard'),
+            default => route('home'),
+        };
+
+        return redirect()->intended($redirectPath);
     }
 }
