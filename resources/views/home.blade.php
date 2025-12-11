@@ -191,4 +191,19 @@
     @endif
 </div>
 
+@push('scripts')
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                Swal.fire({
+                    title: 'Berhasil',
+                    text: "{{ session('success') }}",
+                    icon: 'success',
+                    confirmButtonColor: '#ec4899'
+                });
+            });
+        </script>
+    @endif
+@endpush
+
 @endsection

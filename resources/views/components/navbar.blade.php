@@ -1,4 +1,7 @@
 <nav class="bg-white py-4 px-4 md:px-10 shadow-sm sticky top-0 z-50">
+    @php
+        $cartCount = Auth::check() ? \App\Models\Cart::where('user_id', Auth::id())->sum('qty') : 0;
+    @endphp
     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         
         {{-- LOGO --}}
@@ -68,6 +71,11 @@
             <a href="{{ route('cart.index') }}" class="w-10 h-10 flex items-center justify-center rounded-full text-gray-600 hover:bg-pink-50 hover:text-pink-600 transition-colors group relative" title="Cart">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                 {{-- Badge logic if needed later --}}
+                @if($cartCount > 0)
+                    <span class="absolute -top-1 -right-1 bg-pink-600 text-white text-[10px] font-semibold rounded-full w-5 h-5 flex items-center justify-center shadow-md">
+                        {{ $cartCount }}
+                    </span>
+                @endif
             </a>
         </div>
     </div>
