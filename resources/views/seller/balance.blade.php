@@ -1,97 +1,158 @@
-<x-app-layout>
-    <style>
-        body, * {
-            font-family: 'Poppins', sans-serif !important;
-        }
-    </style>
+@extends('layouts.seller')
 
-    <div class="min-h-screen bg-[#fce8f4]">
+@section('content')
 
-        {{-- TOPBAR --}}
-        <header class="bg-white shadow px-6 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-semibold text-gray-800">My Balance</h1>
-        </header>
+<div class="min-h-screen bg-gray-50 py-10">
+    <div class="max-w-7xl mx-auto px-4 md:px-10">
 
-        <div class="flex">
+        {{-- HEADER --}}
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Saldo Saya</h2>
+                <p class="text-gray-500 mt-2">
+                    Pantau saldo dan riwayat transaksi di toko Anda.
+                </p>
+            </div>
 
-            {{-- SIDEBAR --}}
-            @include('seller.sidebar')
+            {{-- TARIK DANA (AMAN) --}}
+            <a href="{{ url('/seller/withdrawals') }}"
+               class="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-sm font-semibold
+                      text-white bg-pink-600 hover:bg-pink-700 shadow-lg shadow-pink-400/30 transition">
+                Tarik Dana
+            </a>
+        </div>
 
-            {{-- MAIN CONTENT --}}
-            <main class="flex-1 p-10">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                <div class="max-w-4xl mx-auto space-y-6">
+            {{-- BALANCE CARD --}}
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-100/60 p-6 md:p-8">
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-[0.16em]">
+                        Total Saldo
+                    </p>
 
-                    {{-- BALANCE CARD --}}
-                    {{-- BALANCE CARD --}}
-                    <div class="bg-white border-2 border-pink-500 rounded-2xl shadow-lg p-8 flex justify-between items-center">
-                        <div>
-                            <p class="text-pink-600 text-sm font-bold uppercase tracking-wider mb-1">Total Balance</p>
-                            <h2 class="text-4xl font-extrabold text-gray-900">
-                                Rp {{ number_format($balance->balance, 0, ',', '.') }}
-                            </h2>
-                        </div>
-                        
-                        <div>
-                            <a href="/seller/withdrawals" 
-                               class="bg-pink-600 text-white hover:bg-pink-700 px-6 py-3 rounded-full font-semibold shadow transition transform hover:scale-105">
-                                Withdraw Funds
-                            </a>
-                        </div>
+                    <div class="mt-2">
+                        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">
+                            Rp {{ number_format($balance->balance, 0, ',', '.') }}
+                        </h2>
+                        <p class="text-sm text-gray-500 mt-2">
+                            Saldo ini berasal dari riwayat transaksi toko Anda.
+                        </p>
                     </div>
 
-                    {{-- HISTORY SECTION --}}
-                    <div class="bg-white rounded-xl shadow border border-pink-100 p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Recent Transactions</h3>
-
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left">
-                                <thead class="text-gray-500 text-xs uppercase bg-pink-50">
-                                    <tr>
-                                        <th class="px-4 py-3">Date</th>
-                                        <th class="px-4 py-3">Reference</th>
-                                        <th class="px-4 py-3">Type</th>
-                                        <th class="px-4 py-3 text-right">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100">
-                                    @forelse ($histories as $history)
-                                    <tr class="hover:bg-gray-50 transition">
-                                        <td class="px-4 py-3 text-gray-600 text-sm">
-                                            {{ $history->created_at->format('d M Y H:i') }}
-                                        </td>
-                                        
-                                        <td class="px-4 py-3 text-gray-800 font-medium text-sm">
-                                            {{ $history->remarks ?? '-' }}
-                                        </td>
-
-                                        <td class="px-4 py-3">
-                                            @if($history->type == 'credit')
-                                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">IN</span>
-                                            @else
-                                                <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">OUT</span>
-                                            @endif
-                                        </td>
-
-                                        <td class="px-4 py-3 text-right font-bold {{ $history->type == 'credit' ? 'text-green-600' : 'text-red-500' }}">
-                                            {{ $history->type == 'credit' ? '+' : '-' }} 
-                                            Rp {{ number_format($history->amount, 0, ',', '.') }}
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center py-6 text-gray-400 italic">
-                                            No transaction history found.
-                                        </td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="mt-6">
+                        <a href="{{ url('/seller/withdrawals') }}"
+                           class="inline-flex w-full items-center justify-center px-6 py-2.5 rounded-full text-sm font-semibold
+                                  text-white bg-pink-600 hover:bg-pink-700 shadow-lg shadow-pink-400/30 transition">
+                            Tarik Dana
+                        </a>
                     </div>
-
                 </div>
-            </main>
+            </div>
+
+            {{-- TRANSACTIONS TABLE --}}
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-100/50 overflow-hidden">
+                    <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-gray-900 text-lg">Transaksi Terbaru</h3>
+                            <p class="text-sm text-gray-500 mt-1">
+                                Riwayat transaksi masuk dan keluar.
+                            </p>
+                        </div>
+                        <p class="text-xs text-gray-500">
+                            {{ method_exists($histories, 'total') ? $histories->total() : $histories->count() }} transaksi
+                        </p>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50/70 border-b border-gray-100">
+                                    <th class="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                        Tanggal
+                                    </th>
+                                    <th class="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                        Referensi
+                                    </th>
+                                    <th class="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                        Tipe
+                                    </th>
+                                    <th class="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">
+                                        Jumlah
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="divide-y divide-gray-50">
+                                @forelse ($histories as $history)
+                                    @php
+                                        $isCredit = $history->type === 'credit';
+
+                                        $typePill = $isCredit
+                                            ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20'
+                                            : 'bg-red-50 text-red-700 ring-red-600/10';
+
+                                        $typeLabel = $isCredit ? 'Masuk' : 'Keluar';
+                                    @endphp
+
+                                    <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                        <td class="py-5 px-6 align-middle">
+                                            <span class="text-sm text-gray-600">
+                                                {{ $history->created_at?->format('d M Y, H:i') }}
+                                            </span>
+                                        </td>
+
+                                        <td class="py-5 px-6 align-middle">
+                                            <span class="text-sm font-medium text-gray-900">
+                                                {{ $history->remarks ?? '-' }}
+                                            </span>
+                                        </td>
+
+                                        <td class="py-5 px-6 align-middle">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ring-1 ring-inset {{ $typePill }}">
+                                                {{ $typeLabel }}
+                                            </span>
+                                        </td>
+
+                                        <td class="py-5 px-6 align-middle text-right">
+                                            <span class="font-semibold {{ $isCredit ? 'text-emerald-700' : 'text-red-600' }}">
+                                                {{ $isCredit ? '+' : '-' }}
+                                                Rp {{ number_format($history->amount, 0, ',', '.') }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center py-12">
+                                            <div class="flex flex-col items-center justify-center text-gray-400">
+                                                <svg class="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                <p class="text-lg font-medium text-gray-900">Belum ada transaksi</p>
+                                                <p class="text-sm text-gray-500">
+                                                    Riwayat transaksi akan muncul setelah ada aktivitas.
+                                                </p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{-- PAGINATION (kalau paginate) --}}
+                    @if(method_exists($histories, 'hasPages') && $histories->hasPages())
+                        <div class="px-6 py-4 border-t border-gray-100">
+                            {{ $histories->appends(request()->query())->links() }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+
         </div>
     </div>
-</x-app-layout>
+</div>
+
+@endsection
