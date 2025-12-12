@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TransactionDetail extends Model
 {
+    protected $table = 'transaction_details';
 
     protected $fillable = [
         'transaction_id',
@@ -18,13 +19,18 @@ class TransactionDetail extends Model
         'subtotal' => 'decimal:2',
     ];
 
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'transaction_id');
+    }
+
     public function transaction()
     {
-        return $this->belongsTo(Transaction::class);
+        return $this->order();
     }
 
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id');
     }
 }

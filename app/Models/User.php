@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+
 use App\Models\Store;
-use App\Models\Product; // <-- Tambahkan ini
+use App\Models\Product;
 
 class User extends Authenticatable
 {
@@ -17,6 +18,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'balance', // ✅ WAJIB biar saldo bisa di-update
     ];
 
     protected $hidden = [
@@ -29,6 +31,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'balance' => 'decimal:2', // ✅ biar tampil rapi kalau decimal
         ];
     }
 
@@ -52,7 +55,7 @@ class User extends Authenticatable
         return $this->role === 'seller';
     }
 
-     public function dashboardRedirectPath(): string
+    public function dashboardRedirectPath(): string
     {
         return match ($this->role) {
             'admin' => route('admin.dashboard'),
