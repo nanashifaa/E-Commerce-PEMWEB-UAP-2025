@@ -11,32 +11,22 @@ class ProductController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
-    | INDEX — LIST PRODUK UNTUK PEMBELI
+    | LIST PRODUK UNTUK PEMBELI (PUBLIC)
     |--------------------------------------------------------------------------
     */
-    public function index(Request $request)
+    public function list()
     {
-        $query = $request->input('q');
-
         $products = Product::with(['productImages', 'store', 'productCategory'])
-            ->when($query, function ($q) use ($query) {
-                $q->where(function($qq) use ($query) {
-                    $qq->where('name', 'LIKE', "%{$query}%")
-                       ->orWhere('description', 'LIKE', "%{$query}%");
-                });
-            })
             ->where('stock', '>', 0)
             ->latest()
-            ->paginate(20)
-            ->withQueryString();
+            ->paginate(12);
 
-        // view pembeli (kamu bisa pakai products.index sesuai yang tadi aku buat)
-        return view('products.index', compact('products', 'query'));
+        return view('product.index', compact('products'));
     }
 
     /*
     |--------------------------------------------------------------------------
-    | SELLER INDEX — LIST PRODUK SELLER
+    | INDEX — LIST PRODUK SELLER
     |--------------------------------------------------------------------------
     */
     public function sellerIndex()
@@ -65,8 +55,8 @@ class ProductController extends Controller
             'store',
             'productReviews.user'
         ])
-        ->where('slug', $slug)
-        ->firstOrFail();
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         return view('product.show', compact('product'));
     }
@@ -79,13 +69,12 @@ class ProductController extends Controller
     public function create()
     {
         $categories = ProductCategory::all();
-
         return view('seller.products.create', compact('categories'));
     }
 
     /*
     |--------------------------------------------------------------------------
-    | STORE — SIMPAN PRODUK BARU (SELLER)
+    | STORE — SIMPAN PRODUK BARU
     |--------------------------------------------------------------------------
     */
     public function store(Request $request)
@@ -104,7 +93,7 @@ class ProductController extends Controller
             'store_id'            => auth()->user()->store->id,
             'product_category_id' => $request->product_category_id,
             'name'                => $request->name,
-            'slug'                => Str::slug($request->name) . '-' . rand(1000,9999),
+            'slug'                => Str::slug($request->name) . '-' . rand(1000, 9999),
             'description'         => $request->description,
             'price'               => $request->price,
             'stock'               => $request->stock,
@@ -119,7 +108,7 @@ class ProductController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | EDIT — FORM EDIT PRODUK (SELLER)
+    | EDIT — FORM EDIT PRODUK
     |--------------------------------------------------------------------------
     */
     public function edit(Product $product)
@@ -129,13 +118,12 @@ class ProductController extends Controller
         }
 
         $categories = ProductCategory::all();
-
         return view('seller.products.edit', compact('product', 'categories'));
     }
 
     /*
     |--------------------------------------------------------------------------
-    | UPDATE — UPDATE PRODUK (SELLER)
+    | UPDATE — UPDATE PRODUK
     |--------------------------------------------------------------------------
     */
     public function update(Request $request, Product $product)
@@ -157,7 +145,7 @@ class ProductController extends Controller
         $product->update([
             'product_category_id' => $request->product_category_id,
             'name'                => $request->name,
-            'slug'                => Str::slug($request->name) . '-' . rand(1000,9999),
+            'slug'                => Str::slug($request->name) . '-' . rand(1000, 9999),
             'description'         => $request->description,
             'price'               => $request->price,
             'stock'               => $request->stock,
@@ -172,7 +160,7 @@ class ProductController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | DESTROY — HAPUS PRODUK (SELLER)
+    | DESTROY — HAPUS PRODUK
     |--------------------------------------------------------------------------
     */
     public function destroy(Product $product)
@@ -182,13 +170,12 @@ class ProductController extends Controller
         }
 
         $product->delete();
-
         return back()->with('success', 'Product berhasil dihapus.');
     }
 
     /*
     |--------------------------------------------------------------------------
-    | SEARCH — PENCARIAN PRODUK UNTUK PEMBELI (opsional, bisa tetap dipakai)
+    | SEARCH — PENCARIAN PRODUK (PUBLIC)
     |--------------------------------------------------------------------------
     */
     public function search(Request $request)
@@ -196,18 +183,17 @@ class ProductController extends Controller
         $query = $request->input('q');
 
         if (empty($query)) {
-            return redirect()->route('home')->with('info', 'Masukkan kata kunci pencarian');
+            return redirect()->back()->with('info', 'Masukkan kata kunci pencarian');
         }
 
         $products = Product::with(['productImages', 'store', 'productCategory'])
-            ->where(function($q) use ($query) {
+            ->where(function ($q) use ($query) {
                 $q->where('name', 'LIKE', "%{$query}%")
                   ->orWhere('description', 'LIKE', "%{$query}%");
             })
             ->where('stock', '>', 0)
             ->latest()
-            ->paginate(20)
-            ->withQueryString();
+            ->paginate(20);
 
         return view('product.search', compact('products', 'query'));
     }
