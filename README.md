@@ -1,7 +1,3 @@
-Siap! Ini aku *rapikan versi final README* agar benar-benar *siap tempel ke GitHub*, format markdown rapi, heading konsisten, dan terlihat profesional.
-
----
-
 # 🛒 Cheap N Use — Fullstack E-Commerce Laravel 12
 
 ### Ujian Praktikum Pemrograman Web (UAP) — 2025
