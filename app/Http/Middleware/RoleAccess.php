@@ -11,12 +11,12 @@ class RoleAccess
     {
         $user = auth()->user();
 
-        // Not logged in
+        // Jika belum login
         if (!$user) {
             return redirect()->route('login');
         }
 
-        // Check user role
+        // Jika role tidak sesuai
         if (!in_array($user->role, $roles)) {
             abort(403, 'Unauthorized');
         }
