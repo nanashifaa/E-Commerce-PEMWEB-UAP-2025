@@ -4,15 +4,15 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Tampilkan form login.
      */
     public function create(): View
     {
@@ -20,34 +20,32 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
+     * Proses login.
      */
-    public function store(Request $request)
+    public function store(LoginRequest $request): RedirectResponse
     {
-        $request->validate([
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        // Validasi + cek kredensial (pakai LoginRequest)
+        $request->authenticate();
 
-        if (!auth()->attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-            return back()->withErrors(['email' => 'Email atau password salah.']);
-        }
-
+        // Regenerate session biar aman
         $request->session()->regenerate();
 
-        // default buyer
-        return redirect()->intended(auth()->user()->dashboardRedirectPath());
+        $user = $request->user();
+
+        $redirectRoute = match ($user->role) {
+            'admin'  => 'admin.dashboard',   
+            'seller' => 'seller.dashboard',
+            default  => 'home',              
+        };
+
+        return redirect()->intended(route($redirectRoute));
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');
