@@ -20,6 +20,7 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\SellerDashboardController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\TransactionHistoryController;
+use App\Http\Controllers\Admin\AdminWithdrawalController;
 
 Route::get('/', function () {
     return redirect()->route('home');
@@ -28,11 +29,6 @@ Route::get('/', function () {
 // Home untuk guest & member
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-/*
-|--------------------------------------------------------------------------
-| PUBLIC PRODUCT (PEMBELI / GUEST)
-|--------------------------------------------------------------------------
-*/
 Route::get('/products', [ProductController::class, 'list'])->name('products.index');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/search', [ProductController::class, 'search'])->name('product.search');
@@ -52,11 +48,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-/*
-|--------------------------------------------------------------------------
-| MEMBER
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth', 'access:member'])->group(function () {
 
     // Transactions
@@ -88,11 +79,6 @@ Route::middleware(['auth', 'access:member'])->group(function () {
     Route::post('/payment/confirm', [WalletController::class, 'confirmPayment'])->name('payment.confirm');
 });
 
-/*
-|--------------------------------------------------------------------------
-| SELLER
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth', 'access:seller'])->group(function () {
 
     Route::get('/seller/dashboard', [SellerDashboardController::class, 'index'])->name('seller.dashboard');
@@ -118,7 +104,7 @@ Route::middleware(['auth', 'access:seller'])->group(function () {
     Route::get('/seller/orders', [OrderController::class, 'index'])->name('seller.orders.index');
     Route::get('/seller/orders/{id}', [OrderController::class, 'show'])->name('seller.orders.show');
 
-    // Withdrawals
+    // Withdrawals (SELLER)
     Route::get('/seller/withdrawals', [WithdrawalController::class, 'index'])->name('seller.withdrawals.index');
     Route::post('/seller/withdrawals', [WithdrawalController::class, 'store'])->name('seller.withdrawals.store');
 
@@ -126,24 +112,20 @@ Route::middleware(['auth', 'access:seller'])->group(function () {
     Route::get('/seller/balance', [BalanceController::class, 'index']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| STORE REGISTER (AUTH)
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth'])->group(function () {
     Route::get('/store/register', [StoreController::class, 'create'])->name('store.register');
     Route::post('/store/register', [StoreController::class, 'store'])->name('store.register.process');
 });
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth', 'access:admin'])->group(function () {
 
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+
+    // ✅ TAMBAHAN: Withdrawals (ADMIN)
+    Route::get('/admin/withdrawals', [AdminWithdrawalController::class, 'index'])->name('admin.withdrawals.index');
+    Route::get('/admin/withdrawals/{id}', [AdminWithdrawalController::class, 'show'])->name('admin.withdrawals.show');
+    Route::post('/admin/withdrawals/{id}/approve', [AdminWithdrawalController::class, 'approve'])->name('admin.withdrawals.approve');
+    Route::post('/admin/withdrawals/{id}/reject', [AdminWithdrawalController::class, 'reject'])->name('admin.withdrawals.reject');
 
     // Verification
     Route::get('/admin/verification', [VerificationController::class, 'index']);
