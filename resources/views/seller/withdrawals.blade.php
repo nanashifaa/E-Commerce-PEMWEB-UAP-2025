@@ -1,151 +1,225 @@
-<x-app-layout>
-    <style>
-        body, * {
-            font-family: 'Poppins', sans-serif !important;
-        }
-    </style>
+@extends('layouts.seller')
 
-    <div class="min-h-screen bg-[#fce8f4]">
+@section('content')
 
-        {{-- TOPBAR --}}
-        <header class="bg-white shadow px-6 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-semibold text-gray-800">Withdrawals</h1>
-        </header>
+<div class="min-h-screen bg-gray-50 py-10">
+    <div class="max-w-7xl mx-auto px-4 md:px-10">
 
-        <div class="flex">
+        {{-- HEADER --}}
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Penarikan Dana</h2>
+                <p class="text-gray-500 mt-2">
+                    Ajukan penarikan dana dan pantau riwayatnya.
+                </p>
+            </div>
 
-            {{-- SIDEBAR --}}
-            @include('seller.sidebar')
+            {{-- KEMBALI (AMAN) --}}
+            <a href="{{ url('/seller/balance') }}"
+               class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full
+                      border border-gray-200 bg-white text-gray-700
+                      hover:bg-gray-50 text-sm font-semibold transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Kembali
+            </a>
+        </div>
 
-            {{-- MAIN CONTENT --}}
-            <main class="flex-1 p-10">
+        {{-- SUMMARY --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Saldo</p>
+                <p class="mt-2 text-2xl font-bold text-gray-900">
+                    Rp {{ number_format($computedBalance, 0, ',', '.') }}
+                </p>
+                <p class="text-xs text-gray-500 mt-1">Dihitung dari riwayat transaksi</p>
+            </div>
 
-                <div class="max-w-5xl mx-auto space-y-8">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white border p-5 rounded-xl shadow-sm">
-                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Balance</p>
-                            <p class="mt-2 text-2xl font-bold text-gray-900">Rp {{ number_format($computedBalance, 0, ',', '.') }}</p>
-                            <p class="text-xs text-gray-500 mt-1">Dihitung dari riwayat transaksi</p>
-                        </div>
-                        <div class="bg-white border p-5 rounded-xl shadow-sm">
-                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Income</p>
-                            <p class="mt-2 text-2xl font-bold text-green-600">Rp {{ number_format($totalIncome, 0, ',', '.') }}</p>
-                            <p class="text-xs text-gray-500 mt-1">Akumulasi pemasukan</p>
-                        </div>
-                        <div class="bg-white border p-5 rounded-xl shadow-sm">
-                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Withdrawal</p>
-                            <p class="mt-2 text-2xl font-bold text-pink-600">Rp {{ number_format($totalWithdrawals, 0, ',', '.') }}</p>
-                            <p class="text-xs text-gray-500 mt-1">Penarikan yang tercatat</p>
-                        </div>
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Pemasukan</p>
+                <p class="mt-2 text-2xl font-bold text-emerald-700">
+                    Rp {{ number_format($totalIncome, 0, ',', '.') }}
+                </p>
+                <p class="text-xs text-gray-500 mt-1">Akumulasi pemasukan</p>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Penarikan</p>
+                <p class="mt-2 text-2xl font-bold text-pink-600">
+                    Rp {{ number_format($totalWithdrawals, 0, ',', '.') }}
+                </p>
+                <p class="text-xs text-gray-500 mt-1">Penarikan yang tercatat</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {{-- LEFT: FORM --}}
+            <div class="lg:col-span-1 space-y-6">
+
+                {{-- AVAILABLE BALANCE --}}
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center">
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                        Saldo Tersedia
+                    </p>
+                    <p class="mt-2 text-3xl font-extrabold text-gray-900">
+                        Rp {{ number_format($balance->balance, 0, ',', '.') }}
+                    </p>
+                    <p class="text-xs text-gray-500 mt-2">
+                        Pastikan data rekening sesuai.
+                    </p>
+                </div>
+
+                {{-- FORM --}}
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-100/60">
+                    <div class="px-6 py-5 border-b border-gray-100">
+                        <h3 class="font-bold text-gray-900 text-lg">Ajukan Penarikan</h3>
+                        <p class="text-sm text-gray-500 mt-1">
+                            Isi detail rekening dan jumlah penarikan.
+                        </p>
                     </div>
-                               <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-                                {{-- LEFT COLUMN: FORM --}}
-                        <div class="md:col-span-1 space-y-6">
+                    <div class="p-6">
+                        {{-- ERROR --}}
+                        @if ($errors->any())
+                            <div class="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                                <ul class="list-disc list-inside space-y-1">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
 
-                                {{-- BALANCE INFO --}} 
-                            <div class="bg-white border text-center p-6 rounded-xl shadow-sm">
-                                <h3 class="text-gray-500 font-medium text-sm uppercase">Available Balance</h3>
-                                <p class="text-3xl font-bold text-pink-600 mt-2">
-                                    Rp {{ number_format($balance->balance, 0, ',', '.') }}
+                        <form action="{{ url('/seller/withdrawals') }}" method="POST" class="space-y-4">
+                            @csrf
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                    Nama Bank
+                                </label>
+                                <select name="bank_name" required
+                                        class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
+                                               focus:border-pink-500 focus:ring-pink-500">
+                                    <option value="">-- Pilih Bank --</option>
+                                    <option value="BCA">BCA</option>
+                                    <option value="BRI">BRI</option>
+                                    <option value="BNI">BNI</option>
+                                    <option value="MANDIRI">Mandiri</option>
+                                    <option value="BSI">BSI</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                    Nomor Rekening
+                                </label>
+                                <input type="text" name="account_number" required
+                                       class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
+                                              focus:border-pink-500 focus:ring-pink-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                    Nama Pemilik Rekening
+                                </label>
+                                <input type="text" name="account_name" required
+                                       class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
+                                              focus:border-pink-500 focus:ring-pink-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                    Jumlah (Rp)
+                                </label>
+                                <input type="number" name="amount" min="10000" required
+                                       class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
+                                              focus:border-pink-500 focus:ring-pink-500">
+                                <p class="text-xs text-gray-500 mt-1">
+                                    Minimal penarikan Rp 10.000
                                 </p>
                             </div>
 
-                                {{-- WITHDRAWAL FORM --}} 
-                            <div class="bg-white rounded-xl shadow-sm p-6">
-                                <h2 class="text-lg font-semibold text-gray-800 mb-4">Request Withdrawal</h2>
+                            <button type="submit"
+                                    class="w-full px-6 py-2.5 rounded-full text-sm font-semibold
+                                           text-white bg-pink-600 hover:bg-pink-700
+                                           shadow-lg shadow-pink-400/30 transition">
+                                Kirim Pengajuan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-                                <form action="{{ route('seller.withdrawals.store') }}" method="POST" class="space-y-4">
-                                    @csrf
+            {{-- RIGHT: HISTORY --}}
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-100/50 overflow-hidden">
+                    <div class="px-6 py-5 border-b border-gray-100">
+                        <h3 class="font-bold text-gray-900 text-lg">Riwayat Penarikan</h3>
+                        <p class="text-sm text-gray-500 mt-1">
+                            Status pengajuan penarikan dana.
+                        </p>
+                    </div>
 
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Bank Name</label>
-                                        <select name="bank_name" class="w-full border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required>
-                                            <option value="">Select Bank</option>
-                                            <option value="BCA">BCA</option>
-                                            <option value="BRI">BRI</option>
-                                            <option value="BNI">BNI</option>
-                                            <option value="MANDIRI">Mandiri</option>
-                                            <option value="BSI">BSI</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Account Number</label>
-                                        <input type="number" name="account_number" class="w-full border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required placeholder="e.g. 1234567890">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Account Holder Name</label>
-                                        <input type="text" name="account_name" class="w-full border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required placeholder="e.g. John Doe">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Amount (Rp)</label>
-                                        <input type="number" name="amount" min="10000" class="w-full border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500" required placeholder="Min. 10.000">
-                                    </div>
-
-                                    <button type="submit" class="w-full bg-pink-600 text-white py-2 rounded-lg font-semibold hover:bg-pink-700 transition">
-                                        Submit Request
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-
-                    {{-- RIGHT COLUMN: HISTORY --}}
-                        <div class="md:col-span-2">
-                            <div class="bg-white rounded-xl shadow-sm p-6 min-h-[500px]">
-                                <h2 class="text-lg font-semibold text-gray-800 mb-4">Withdrawal History</h2>
-
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-left">
-                                        <thead class="text-gray-500 text-xs uppercase border-b">
-                                            <tr>
-                                                <th class="py-3">Date</th>
-                                                <th class="py-3">Bank Details</th>
-                                                <th class="py-3">Amount</th>
-                                                <th class="py-3 text-right">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y">
-                                            @forelse ($withdrawals as $w)
-                                            <tr>
-                                                <td class="py-3 text-sm text-gray-600">
-                                                    {{ $w->created_at->format('d M Y') }}
-                                                </td>
-                                                <td class="py-3 text-sm">
-                                                    <p class="font-medium text-gray-800">{{ $w->bank_name }}</p>
-                                                    <p class="text-gray-500 text-xs">{{ $w->bank_account_number }} - {{ $w->bank_account_name }}</p>
-                                                </td>
-                                                <td class="py-3 font-semibold text-gray-800">
-                                                    Rp {{ number_format($w->amount, 0, ',', '.') }}
-                                                </td>
-                                                <td class="py-3 text-right">
-                                                    @if($w->status == 'pending')
-                                                        <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">Pending</span>
-                                                    @elseif($w->status == 'approved')
-                                                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">Approved</span>
-                                                    @else
-                                                        <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">Rejected</span>
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                            @empty
-                                            <tr>
-                                                <td colspan="4" class="text-center py-10 text-gray-400 italic">
-                                                    No withdrawal requests yet.
-                                                </td>
-                                            </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+                                <tr>
+                                    <th class="px-6 py-3">Tanggal</th>
+                                    <th class="px-6 py-3">Rekening</th>
+                                    <th class="px-6 py-3">Jumlah</th>
+                                    <th class="px-6 py-3 text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @forelse ($withdrawals as $w)
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-600">
+                                            {{ $w->created_at->format('d M Y') }}
+                                        </td>
+                                        <td class="px-6 py-4 text-sm">
+                                            <p class="font-medium text-gray-800">{{ $w->bank_name }}</p>
+                                            <p class="text-xs text-gray-500">
+                                                {{ $w->bank_account_number }} — {{ $w->bank_account_name }}
+                                            </p>
+                                        </td>
+                                        <td class="px-6 py-4 font-semibold text-gray-900">
+                                            Rp {{ number_format($w->amount, 0, ',', '.') }}
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            @if($w->status === 'pending')
+                                                <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                                    Menunggu
+                                                </span>
+                                            @elseif($w->status === 'approved')
+                                                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                                    Disetujui
+                                                </span>
+                                            @else
+                                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                                    Ditolak
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center py-12 text-gray-400">
+                                            Belum ada pengajuan penarikan.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
 
                 </div>
-            </main>
+            </div>
+
         </div>
     </div>
-</x-app-layout>
+</div>
+
+@endsection
