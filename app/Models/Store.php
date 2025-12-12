@@ -28,6 +28,11 @@ class Store extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function balance()
+    {
+        return $this->hasOne(StoreBalance::class);
+    }
+
     public function storeBalance()
     {
         return $this->hasOne(StoreBalance::class);

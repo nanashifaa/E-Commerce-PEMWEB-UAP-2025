@@ -18,7 +18,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'balance', // ✅ WAJIB biar saldo bisa di-update
+        'balance', 
     ];
 
     protected $hidden = [
@@ -31,7 +31,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'balance' => 'decimal:2', // ✅ biar tampil rapi kalau decimal
+            'balance' => 'decimal:2',
         ];
     }
 
