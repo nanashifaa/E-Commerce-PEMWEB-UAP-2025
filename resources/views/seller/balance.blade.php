@@ -87,7 +87,7 @@
                             <tbody class="divide-y divide-gray-50">
                                 @forelse ($histories as $history)
                                     @php
-                                        $isCredit = $history->type === 'credit';
+                                        $isCredit = in_array($history->type, ['credit', 'income']);
 
                                         $typePill = $isCredit
                                             ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20'
