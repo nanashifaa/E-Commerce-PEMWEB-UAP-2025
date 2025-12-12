@@ -1,92 +1,130 @@
-<x-app-layout>
+@extends('layouts.seller')
 
-<div class="min-h-screen bg-[#fce8f4] p-10">
+@section('content')
 
-    <h2 class="text-3xl font-semibold text-gray-800 mb-6">Product Categories</h2>
+<div class="min-h-screen bg-gray-50 py-10">
+    <div class="max-w-7xl mx-auto px-4 md:px-10">
 
-    <a href="{{ route('seller.categories.create') }}"
-       class="bg-pink-500 hover:bg-pink-600 text-white px-5 py-2 rounded-lg shadow">
-        + Add Category
-    </a>
+        {{-- HEADER --}}
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Kategori Produk</h2>
+                <p class="text-gray-500 mt-2">
+                    Kelola kategori untuk memudahkan pengelompokan produk di toko Anda.
+                </p>
+            </div>
 
-    <div class="bg-white rounded-xl border border-pink-200 shadow-sm p-6 mt-6">
+            <a href="{{ route('seller.categories.create') }}"
+               class="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-sm font-semibold
+                      text-white bg-pink-600 hover:bg-pink-700 shadow-lg shadow-pink-400/30 transition">
+                + Tambah Kategori
+            </a>
+        </div>
 
-        <table class="w-full text-left">
-            <thead class="text-gray-500 text-sm border-b">
-                <tr>
-                    <th class="py-3">Name</th>
-                    <th class="py-3">Description</th>
-                    <th class="py-3">Action</th>
-                </tr>
-            </thead>
+        {{-- TABLE CARD --}}
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-100/50 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50/70 border-b border-gray-100">
+                            <th class="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Nama
+                            </th>
+                            <th class="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                Deskripsi
+                            </th>
+                            <th class="py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">
+                                Aksi
+                            </th>
+                        </tr>
+                    </thead>
 
-            <tbody>
-                @forelse ($categories as $cat)
-                <tr class="border-b">
-                    <td class="py-3">{{ $cat->name }}</td>
-                    <td class="py-3">{{ $cat->description ?? '-' }}</td>
-                    <td class="py-3">
+                    <tbody class="divide-y divide-gray-50">
+                        @forelse ($categories as $cat)
+                            <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                <td class="py-5 px-6 align-middle">
+                                    <p class="font-semibold text-gray-900">{{ $cat->name }}</p>
+                                </td>
 
-                        <a href="{{ route('seller.categories.edit', $cat->id) }}"
-                           class="text-pink-600 hover:underline mr-3">
-                            Edit
-                        </a>
+                                <td class="py-5 px-6 align-middle">
+                                    <p class="text-sm text-gray-600">
+                                        {{ $cat->description ?: '-' }}
+                                    </p>
+                                </td>
 
-                        <form action="{{ route('seller.categories.delete', $cat->id) }}" 
-                            method="POST" 
-                            class="inline delete-form">
-                            @csrf
-                            @method('DELETE')
+                                <td class="py-5 px-6 text-right align-middle">
+                                    <div class="inline-flex items-center gap-4">
+                                        <a href="{{ route('seller.categories.edit', $cat->id) }}"
+                                           class="text-sm font-medium text-pink-600 hover:text-pink-700 transition">
+                                            Ubah
+                                        </a>
 
-                            <button type="button" class="text-red-500 delete-btn">
-                                Delete
-                            </button>
-                        </form>
+                                        <form action="{{ route('seller.categories.delete', $cat->id) }}"
+                                              method="POST"
+                                              class="inline delete-form">
+                                            @csrf
+                                            @method('DELETE')
 
-                    </td>
-                </tr>
+                                            <button type="button"
+                                                    class="text-sm font-medium text-red-600 hover:text-red-700 transition delete-btn">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="text-center py-12">
+                                    <div class="flex flex-col items-center justify-center text-gray-400">
+                                        <svg class="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                                        </svg>
+                                        <p class="text-lg font-medium text-gray-900">Belum ada kategori</p>
+                                        <p class="text-sm text-gray-500">
+                                            Silakan tambahkan kategori untuk produk Anda.
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-                @empty
-                <tr>
-                    <td colspan="3" class="text-center py-4 text-gray-500">
-                        No categories found
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-
-        </table>
+            {{-- PAGINATION (kalau pakai paginate) --}}
+            @if(method_exists($categories, 'hasPages') && $categories->hasPages())
+                <div class="px-6 py-4 border-t border-gray-100">
+                    {{ $categories->appends(request()->query())->links() }}
+                </div>
+            @endif
+        </div>
 
     </div>
-
 </div>
 
-{{-- =============================== --}}
 {{-- SWEETALERT DELETE CONFIRMATION --}}
-{{-- =============================== --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function () {
-            let form = this.closest('form');
+            const form = this.closest('form');
 
             Swal.fire({
-                title: "Delete this category?",
-                text: "This action cannot be undone.",
+                title: "Hapus kategori ini?",
+                text: "Tindakan ini tidak dapat dibatalkan.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#e11d48",
                 cancelButtonColor: "#6b7280",
-                confirmButtonText: "Yes, delete!",
-                cancelButtonText: "Cancel"
+                confirmButtonText: "Ya, hapus",
+                cancelButtonText: "Batal"
             }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
+                if (result.isConfirmed) form.submit();
             });
         });
     });
 </script>
 
-</x-app-layout>
+@endsection
