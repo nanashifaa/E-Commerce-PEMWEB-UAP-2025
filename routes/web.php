@@ -60,9 +60,9 @@ Route::middleware(['auth', 'access:member'])->group(function () {
     Route::get('/wallet/topup/confirm/{topup}', [WalletController::class, 'confirmTopup'])->name('wallet.topup.confirm');
 
     // Checkout
+    Route::get('/checkout/success', fn() => view('checkout.success'))->name('checkout.success');
     Route::get('/checkout/{slug}', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
-    Route::get('/checkout/success', fn() => view('checkout.success'))->name('checkout.success');
 
     // Cart
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');

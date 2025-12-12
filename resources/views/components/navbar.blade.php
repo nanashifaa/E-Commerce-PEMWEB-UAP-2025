@@ -6,6 +6,12 @@
         $isProducts = request()->routeIs('products.index') || request()->routeIs('product.search') || request()->is('products*') || request()->is('search*');
         $isHistory  = request()->routeIs('history.*') || request()->is('history*');
         $isWallet   = request()->routeIs('wallet.*') || request()->is('wallet/topup*');
+
+        // ✅ CART COUNT DARI DATABASE (BUKAN SESSION)
+        $cartCount = 0;
+        if (auth()->check()) {
+            $cartCount = \App\Models\Cart::where('user_id', auth()->id())->sum('qty');
+        }
     @endphp
 
     <div class="max-w-7xl mx-auto px-4 md:px-10">
@@ -29,7 +35,6 @@
                     Beranda
                 </a>
 
-                {{-- ✅ PRODUK: pindah ke /products --}}
                 <a href="{{ route('products.index') }}"
                    class="{{ $isProducts ? 'text-pink-600 border-b-2 border-pink-600 pb-1' : 'text-gray-600 hover:text-pink-600' }}">
                     Produk
@@ -50,7 +55,6 @@
 
             {{-- SEARCH (DESKTOP) --}}
             <div class="hidden md:flex flex-1 justify-center px-4">
-                {{-- ✅ Search harus ke route search --}}
                 <form action="{{ route('product.search') }}" method="GET" class="w-full max-w-lg">
                     <div class="flex items-center gap-3 bg-gray-100 rounded-full px-4 py-2 border border-gray-200
                                 focus-within:border-pink-400 focus-within:ring-1 focus-within:ring-pink-400 transition">
@@ -95,7 +99,6 @@
                               d="M3 3h2l.4 2M7 13h10l1.5-7H6.4M7 13L5.4 5M7 13l-2 9m12-9l2 9M9 22a1 1 0 100-2 1 1 0 000 2zM17 20a1 1 0 100-2 1 1 0 000 2z"/>
                     </svg>
 
-                    @php $cartCount = session('cart_count') ?? 0; @endphp
                     @if($cartCount > 0)
                         <span class="absolute -top-2 -right-2 w-5 h-5 bg-pink-500 text-white text-[10px] flex items-center justify-center rounded-full">
                             {{ $cartCount }}
@@ -192,7 +195,6 @@
                     Beranda
                 </a>
 
-                {{-- ✅ PRODUK MOBILE: pindah ke /products --}}
                 <a href="{{ route('products.index') }}"
                    class="block px-5 py-3 text-sm font-medium {{ $isProducts ? 'text-pink-600 bg-pink-50' : 'text-gray-700 hover:bg-gray-50' }}">
                     Produk
