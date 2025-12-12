@@ -6,19 +6,25 @@
     <nav class="flex-1 px-4 py-4 space-y-1 text-sm font-medium">
         <a href="{{ route('admin.dashboard') }}"
            class="flex items-center px-3 py-2 rounded-lg
-                  {{ request()->routeIs('admin.dashboard') ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:bg-gray-100' }}">
+           {{ request()->routeIs('admin.dashboard') ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:bg-gray-100' }}">
             <span>Dashboard</span>
+        </a>
+
+        <a href="{{ route('admin.withdrawals.index') }}"
+           class="flex items-center px-3 py-2 rounded-lg
+           {{ request()->routeIs('admin.withdrawals.*') ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:bg-gray-100' }}">
+            <span>Withdrawals</span>
         </a>
 
         <a href="{{ url('/admin/users') }}"
            class="flex items-center px-3 py-2 rounded-lg
-                  {{ request()->is('admin/users*') ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:bg-gray-100' }}">
+           {{ request()->is('admin/users*') ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:bg-gray-100' }}">
             <span>Manage Users</span>
         </a>
 
         <a href="{{ url('/admin/verification') }}"
            class="flex items-center px-3 py-2 rounded-lg
-                  {{ request()->is('admin/verification*') ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:bg-gray-100' }}">
+           {{ request()->is('admin/verification*') ? 'bg-pink-50 text-pink-600' : 'text-gray-700 hover:bg-gray-100' }}">
             <span>Store Verification</span>
         </a>
     </nav>

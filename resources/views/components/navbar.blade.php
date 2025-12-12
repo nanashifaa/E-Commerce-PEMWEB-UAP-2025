@@ -2,9 +2,10 @@
     @php
         $user = auth()->user();
 
-        $isHome = request()->routeIs('home') || request()->is('home') || request()->is('/');
-        $isHistory = request()->routeIs('history.*') || request()->is('history*');
-        $isWallet  = request()->routeIs('wallet.*') || request()->is('wallet/topup*');
+        $isHome     = request()->routeIs('home') || request()->is('home') || request()->is('/');
+        $isProducts = request()->routeIs('products.index') || request()->routeIs('product.search') || request()->is('products*') || request()->is('search*');
+        $isHistory  = request()->routeIs('history.*') || request()->is('history*');
+        $isWallet   = request()->routeIs('wallet.*') || request()->is('wallet/topup*');
     @endphp
 
     <div class="max-w-7xl mx-auto px-4 md:px-10">
@@ -28,8 +29,9 @@
                     Beranda
                 </a>
 
-                <a href="{{ route('home') }}#produk"
-                   class="text-gray-600 hover:text-pink-600">
+                {{-- ✅ PRODUK: pindah ke /products --}}
+                <a href="{{ route('products.index') }}"
+                   class="{{ $isProducts ? 'text-pink-600 border-b-2 border-pink-600 pb-1' : 'text-gray-600 hover:text-pink-600' }}">
                     Produk
                 </a>
 
@@ -48,7 +50,8 @@
 
             {{-- SEARCH (DESKTOP) --}}
             <div class="hidden md:flex flex-1 justify-center px-4">
-                <form action="{{ route('home') }}" method="GET" class="w-full max-w-lg">
+                {{-- ✅ Search harus ke route search --}}
+                <form action="{{ route('product.search') }}" method="GET" class="w-full max-w-lg">
                     <div class="flex items-center gap-3 bg-gray-100 rounded-full px-4 py-2 border border-gray-200
                                 focus-within:border-pink-400 focus-within:ring-1 focus-within:ring-pink-400 transition">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +164,7 @@
 
         {{-- SEARCH BAR MOBILE --}}
         <div id="mobile-search-bar" class="md:hidden hidden pb-4">
-            <form action="{{ route('home') }}" method="GET" class="w-full">
+            <form action="{{ route('product.search') }}" method="GET" class="w-full">
                 <div class="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-2 border border-gray-200
                             focus-within:border-pink-400 focus-within:ring-1 focus-within:ring-pink-400 transition">
                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,8 +192,9 @@
                     Beranda
                 </a>
 
-                <a href="{{ route('home') }}#produk"
-                   class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                {{-- ✅ PRODUK MOBILE: pindah ke /products --}}
+                <a href="{{ route('products.index') }}"
+                   class="block px-5 py-3 text-sm font-medium {{ $isProducts ? 'text-pink-600 bg-pink-50' : 'text-gray-700 hover:bg-gray-50' }}">
                     Produk
                 </a>
 

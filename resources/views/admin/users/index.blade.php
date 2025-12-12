@@ -58,7 +58,7 @@
                     {{-- STORE --}}
                     <td class="py-3 px-2">
                         @if ($user->store)
-                            <span class="text-gray-900 font-medium">{{ $user->store->store_name }}</span>
+                            <span class="text-gray-900 font-medium">{{ $user->store->name }}</span>
                         @else
                             <span class="text-gray-400 italic">No Store</span>
                         @endif
