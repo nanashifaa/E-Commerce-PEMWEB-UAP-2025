@@ -34,13 +34,20 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
 
             @foreach($products as $product)
+                @php
+                    $firstImage = $product->productImages->first();
+                    $imageUrl = $firstImage
+                        ? asset('storage/' . $firstImage->image)
+                        : asset('images/no-image.png'); // fallback lokal
+                @endphp
+
                 <a href="{{ route('product.show', $product->slug) }}"
                    class="group bg-white rounded-2xl border border-pink-200 shadow-sm
                           hover:shadow-lg hover:-translate-y-1 transition overflow-hidden">
 
                     {{-- IMAGE --}}
                     <div class="relative aspect-square bg-gray-100 overflow-hidden">
-                        <img src="{{ $product->image ?? 'https://via.placeholder.com/400' }}"
+                        <img src="{{ $imageUrl }}"
                              alt="{{ $product->name }}"
                              class="w-full h-full object-cover group-hover:scale-105 transition">
 
@@ -62,12 +69,10 @@
                         </p>
 
                         <div class="flex items-center justify-between mt-3">
-                            {{-- STOCK --}}
                             <span class="text-xs text-gray-500">
                                 Stok: {{ $product->stock }}
                             </span>
 
-                            {{-- CTA --}}
                             <span class="text-xs font-semibold text-pink-600 group-hover:underline">
                                 Lihat →
                             </span>

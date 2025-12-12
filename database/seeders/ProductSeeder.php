@@ -3,57 +3,43 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Product;
-use App\Models\Store;
-use App\Models\ProductCategory;
 use Illuminate\Support\Str;
+use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Models\Store;
 
 class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        // Ambil toko pertama (toko yang sudah dibuat sebelumnya)
         $store = Store::first();
+        if (!$store) return;
 
-        if (!$store) {
-            $this->command->warn("Tidak ada store ditemukan. Jalankan StoreSeeder terlebih dahulu.");
-            return;
-        }
+        $cat = ProductCategory::first(); // ambil kategori pertama
+        if (!$cat) return;
 
-        // Ambil semua kategori
-        $categories = ProductCategory::pluck('id')->toArray();
-
-        if (empty($categories)) {
-            $this->command->warn("Tidak ada kategori produk ditemukan. Jalankan ProductCategorySeeder terlebih dahulu.");
-            return;
-        }
-
-        // Data contoh produk
-        $products = [
-            ['name' => 'Laptop Pro 15', 'price' => 15000000],
-            ['name' => 'Smartphone XZ Max', 'price' => 7500000],
-            ['name' => 'Headset Wireless HD', 'price' => 1200000],
-            ['name' => 'Smartwatch Fit Pro', 'price' => 900000],
-            ['name' => 'Kemeja Casual Pria', 'price' => 250000],
-            ['name' => 'Dress Elegan Wanita', 'price' => 350000],
-            ['name' => 'Skincare Glow Set', 'price' => 500000],
-            ['name' => 'Alat Fitness Dumbbell 10kg', 'price' => 300000],
-            ['name' => 'Blender Serbaguna', 'price' => 450000],
-            ['name' => 'Set Panci Stainless Steel', 'price' => 600000],
+        $items = [
+            ['name' => 'Baju Tidur Sutra', 'price' => 75000, 'stock' => 10, 'weight' => 300, 'condition' => 'new'],
+            ['name' => 'Hoodie Fleece', 'price' => 120000, 'stock' => 6, 'weight' => 650, 'condition' => 'new'],
+            ['name' => 'Kemeja Flanel Kotak', 'price' => 95000, 'stock' => 7, 'weight' => 450, 'condition' => 'new'],
+            ['name' => 'Jas Formal Hitam', 'price' => 250000, 'stock' => 3, 'weight' => 900, 'condition' => 'new'],
+            ['name' => 'Bando Korea', 'price' => 25000, 'stock' => 15, 'weight' => 120, 'condition' => 'new'],
+            ['name' => 'Kalung Titanium', 'price' => 45000, 'stock' => 12, 'weight' => 80, 'condition' => 'new'],
         ];
 
-        foreach ($products as $item) {
-            Product::create([
-                'store_id'              => $store->id,
-                'product_category_id'   => $categories[array_rand($categories)], // kategori random
-                'name'                  => $item['name'],
-                'slug'                  => Str::slug($item['name']),
-                'description'           => 'Deskripsi untuk produk ' . $item['name'],
-                'condition'             => 'new', // new / used sesuai kebutuhan
-                'price'                 => $item['price'],
-                'weight'                => rand(200, 2000), // gram
-                'stock'                 => rand(10, 100),
-            ]);
+        foreach ($items as $it) {
+            Product::firstOrCreate(
+                ['name' => $it['name'], 'store_id' => $store->id],
+                [
+                    'product_category_id' => $cat->id,
+                    'slug' => Str::slug($it['name']) . '-' . rand(1000, 9999),
+                    'description' => 'Produk demo seeder untuk tugas.',
+                    'price' => $it['price'],
+                    'stock' => $it['stock'],
+                    'condition' => $it['condition'],
+                    'weight' => $it['weight'],
+                ]
+            );
         }
     }
 }

@@ -17,10 +17,7 @@
 
             <a href="{{ route('seller.products.index') }}"
                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 text-sm font-semibold transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Kembali ke Produk
+                ← Kembali ke Produk
             </a>
         </div>
 
@@ -30,8 +27,7 @@
 
                 {{-- ERROR --}}
                 @if ($errors->any())
-                    <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
-                        <p class="font-semibold mb-2">Ada yang perlu diperbaiki:</p>
+                    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                         <ul class="list-disc list-inside space-y-1">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -49,151 +45,109 @@
 
                     {{-- NAMA --}}
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Nama Produk <span class="text-red-500">*</span>
-                        </label>
+                        <label class="text-sm font-semibold text-gray-700">Nama Produk *</label>
                         <input type="text" name="name" required
                                value="{{ old('name', $product->name) }}"
-                               class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                      focus:border-pink-500 focus:ring-pink-500">
+                               class="w-full mt-1 rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5">
                     </div>
 
-                    {{-- KATEGORI + KONDISI --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">
-                                Kategori <span class="text-red-500">*</span>
-                            </label>
-                            <select name="product_category_id" required
-                                    class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                           focus:border-pink-500 focus:ring-pink-500">
-                                <option value="">-- Pilih kategori --</option>
-                                @foreach($categories as $cat)
-                                    <option value="{{ $cat->id }}"
-                                        {{ old('product_category_id', $product->product_category_id) == $cat->id ? 'selected' : '' }}>
-                                        {{ $cat->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">
-                                Kondisi <span class="text-red-500">*</span>
-                            </label>
-                            <select name="condition" required
-                                    class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                           focus:border-pink-500 focus:ring-pink-500">
-                                <option value="">-- Pilih kondisi --</option>
-                                <option value="new" {{ old('condition', $product->condition) == 'new' ? 'selected' : '' }}>
-                                    Baru
+                    {{-- KATEGORI --}}
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Kategori *</label>
+                        <select name="product_category_id" required
+                                class="w-full mt-1 rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5">
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}"
+                                    {{ old('product_category_id', $product->product_category_id) == $cat->id ? 'selected' : '' }}>
+                                    {{ $cat->name }}
                                 </option>
-                                <option value="used" {{ old('condition', $product->condition) == 'used' ? 'selected' : '' }}>
-                                    Bekas
-                                </option>
-                            </select>
-                        </div>
+                            @endforeach
+                        </select>
                     </div>
 
-                    {{-- HARGA + STOK + BERAT --}}
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">
-                                Harga (Rp) <span class="text-red-500">*</span>
-                            </label>
-                            <input type="number" name="price" required min="0"
-                                   value="{{ old('price', (int) $product->price) }}"
-                                   class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                          focus:border-pink-500 focus:ring-pink-500">
-                        </div>
+                    {{-- KONDISI --}}
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Kondisi *</label>
+                        <select name="condition" required
+                                class="w-full mt-1 rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5">
+                            <option value="new"  {{ $product->condition == 'new' ? 'selected' : '' }}>Baru</option>
+                            <option value="used" {{ $product->condition == 'used' ? 'selected' : '' }}>Bekas</option>
+                        </select>
+                    </div>
 
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">
-                                Stok <span class="text-red-500">*</span>
-                            </label>
-                            <input type="number" name="stock" required min="0"
-                                   value="{{ old('stock', $product->stock) }}"
-                                   class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                          focus:border-pink-500 focus:ring-pink-500">
-                        </div>
+                    {{-- HARGA --}}
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Harga *</label>
+                        <input type="number" name="price" min="0" required
+                               value="{{ old('price', $product->price) }}"
+                               class="w-full mt-1 rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5">
+                    </div>
 
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">
-                                Berat (gram) <span class="text-red-500">*</span>
-                            </label>
-                            <input type="number" name="weight" required min="0"
-                                   value="{{ old('weight', $product->weight) }}"
-                                   class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                          focus:border-pink-500 focus:ring-pink-500">
-                        </div>
+                    {{-- STOK --}}
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Stok *</label>
+                        <input type="number" name="stock" min="0" required
+                               value="{{ old('stock', $product->stock) }}"
+                               class="w-full mt-1 rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5">
+                    </div>
+
+                    {{-- BERAT --}}
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Berat (gram) *</label>
+                        <input type="number" name="weight" min="0" required
+                               value="{{ old('weight', $product->weight) }}"
+                               class="w-full mt-1 rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5">
                     </div>
 
                     {{-- DESKRIPSI --}}
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Deskripsi
-                        </label>
-                        <textarea name="description" rows="4"
-                                  class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                         focus:border-pink-500 focus:ring-pink-500">{{ old('description', $product->description) }}</textarea>
+                        <label class="text-sm font-semibold text-gray-700">Deskripsi</label>
+                        <textarea name="description" rows="3"
+                                  class="w-full mt-1 rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5">{{ old('description', $product->description) }}</textarea>
                     </div>
 
                     {{-- FOTO SAAT INI --}}
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Foto Saat Ini</label>
+                        <label class="text-sm font-semibold text-gray-700">Foto Saat Ini</label>
 
                         @if($product->productImages->count())
-                            <div class="flex flex-wrap gap-3">
+                            <div class="flex gap-2 mt-2">
                                 @foreach($product->productImages as $img)
-                                    <div class="w-20 h-20 rounded-xl overflow-hidden border border-gray-200 bg-gray-100">
-                                        <img src="{{ asset('storage/' . $img->image_path) }}"
-                                             class="w-full h-full object-cover"
-                                             alt="Foto produk">
-                                    </div>
+                                    <img src="{{ asset('storage/' . $img->image) }}"
+                                         class="w-20 h-20 object-cover rounded border">
                                 @endforeach
                             </div>
-                            <p class="text-xs text-gray-500 mt-2">
-                                Foto lama tidak otomatis terhapus.
-                            </p>
                         @else
-                            <p class="text-sm text-gray-500">Belum ada foto.</p>
+                            <p class="text-sm text-gray-500 mt-1">Belum ada foto.</p>
                         @endif
                     </div>
 
-                    {{-- TAMBAH FOTO BARU --}}
+                    {{-- TAMBAH FOTO --}}
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">
-                            Tambah Foto Baru
-                        </label>
+                        <label class="text-sm font-semibold text-gray-700">Tambah Foto Baru</label>
                         <input type="file" name="image[]" multiple accept="image/*"
-                               class="w-full text-sm rounded-xl border-gray-200 bg-gray-50
-                                      focus:border-pink-500 focus:ring-pink-500
-                                      file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm
-                                      file:font-semibold file:bg-pink-50 file:text-pink-600 hover:file:bg-pink-100">
-                        <p class="mt-1 text-xs text-gray-500">
-                            Anda bisa mengunggah lebih dari satu foto (JPG/PNG).
+                               class="mt-1 block w-full text-sm">
+                        <p class="text-xs text-gray-500 mt-1">
+                            Kosongkan jika tidak ingin menambah foto
                         </p>
                     </div>
 
-                    {{-- TOMBOL --}}
-                    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                    {{-- BUTTON --}}
+                    <div class="flex gap-3 pt-4">
                         <button type="submit"
-                                class="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-sm font-semibold
-                                       text-white bg-pink-600 hover:bg-pink-700 shadow-lg shadow-pink-400/30 transition">
-                            Simpan Perubahan
+                                class="px-6 py-2 rounded-full bg-pink-600 text-white font-semibold hover:bg-pink-700">
+                            Simpan
                         </button>
-
                         <a href="{{ route('seller.products.index') }}"
-                           class="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-sm font-semibold
-                                  text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 transition">
-                            Batalkan
+                           class="px-6 py-2 rounded-full border border-gray-300 text-gray-700">
+                            Batal
                         </a>
                     </div>
 
                 </form>
+
             </div>
         </div>
-
     </div>
 </div>
 

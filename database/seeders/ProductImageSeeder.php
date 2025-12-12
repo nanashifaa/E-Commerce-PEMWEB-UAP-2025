@@ -3,43 +3,48 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use App\Models\Product;
+use App\Models\ProductImage;
 
 class ProductImageSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        // Ensure directory exists
-        if (!File::exists(storage_path('app/public/products'))) {
-            File::makeDirectory(storage_path('app/public/products'), 0755, true);
-        }
+        $srcDir = public_path('upload'); // folder kamu: public/upload
+        if (!File::exists($srcDir)) return;
 
-        // Correct Mapping based on database IDs
-        $products = [
-            1 => 'laptop_pro_15.jpg',           // Laptop Pro 15
-            2 => 'smartphone_xz_max.jpg',       // Smartphone XZ Max
-            3 => 'headset_wireless_hd.jpg',     // Headset Wireless HD
-            4 => 'smartwatch_fit_pro.jpg',      // Smartwatch Fit Pro
-            5 => 'kemeja_flannel_kotak_kotak.jpg', // Kemeja Casual Pria
-            6 => 'celana_chino_slim_fit.jpg',   // Dress Elegan Wanita (Placeholder)
-            7 => 'sepatu_sneakers_urban.jpg',   // Skincare Glow Set (Placeholder)
-            8 => 'jaket_bomber_casual.jpg',     // Alat Fitness Dumbbell 10kg (Placeholder)
-            9 => 'blender_serbaguna.jpg',       // Blender Serbaguna
-            10 => 'set_panci_stainless_steel.jpg', // Set Panci Stainless Steel
-        ];
+        $files = collect(File::files($srcDir))
+            ->filter(fn ($f) => in_array(strtolower($f->getExtension()), ['jpg','jpeg','png','webp']))
+            ->values();
 
-        DB::table('product_images')->truncate(); 
+        if ($files->isEmpty()) return;
 
-        foreach ($products as $id => $filename) {
-            DB::table('product_images')->insert([
-                'product_id' => $id,
-                'image' => 'products/' . $filename,
-                'is_thumbnail' => 1, // FIXED COLUMN NAME
-                'created_at' => now(),
-                'updated_at' => now(),
+        $products = Product::all();
+        if ($products->isEmpty()) return;
+
+        // bagi gambar ke produk secara berurutan
+        $i = 0;
+        foreach ($products as $product) {
+            // ambil 1 gambar per produk (bisa kamu ubah jadi 2-3 kalau mau)
+            $file = $files[$i % $files->count()];
+            $i++;
+
+            $originalName = $file->getFilename();
+            $safeName = Str::random(6) . '-' . str_replace(' ', '-', $originalName);
+
+            // simpan ke storage/public/products
+            $destPath = 'products/' . $safeName;
+            Storage::disk('public')->put($destPath, File::get($file->getRealPath()));
+
+            // simpan ke DB (kolom: image)
+            ProductImage::create([
+                'product_id' => $product->id,
+                'image' => $destPath,       // nanti ditampilkan pakai asset('storage/'.$img->image)
+                'is_thumbnail' => 1,
             ]);
-            echo "Inserted image for Product ID: $id\n";
         }
     }
 }

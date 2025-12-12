@@ -1,13 +1,16 @@
 @extends('layouts.seller')
 
 @section('content')
+
 <div class="min-h-screen bg-gray-50 py-10">
     <div class="max-w-4xl mx-auto px-4 md:px-10">
 
         {{-- HEADER --}}
         <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
             <div>
-                <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Tambah Produk</h2>
+                <h2 class="text-3xl font-bold text-gray-900 tracking-tight">
+                    Tambah Produk
+                </h2>
                 <p class="text-gray-500 mt-2">
                     Lengkapi informasi produk untuk mulai dijual di toko Anda.
                 </p>
@@ -15,10 +18,7 @@
 
             <a href="{{ route('seller.products.index') }}"
                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 text-sm font-semibold transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Kembali ke Produk
+                ← Kembali ke Produk
             </a>
         </div>
 
@@ -26,10 +26,9 @@
         <div class="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-100/60 overflow-hidden">
             <div class="p-6 md:p-8">
 
-                {{-- VALIDATION ERRORS --}}
+                {{-- ERROR --}}
                 @if ($errors->any())
-                    <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
-                        <p class="font-semibold mb-2">Ada yang perlu diperbaiki:</p>
+                    <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                         <ul class="list-disc list-inside space-y-1">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -52,8 +51,7 @@
                         <input type="text" name="name" required
                                value="{{ old('name') }}"
                                placeholder="Contoh: Sepatu Sneakers"
-                               class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                      focus:border-pink-500 focus:ring-pink-500">
+                               class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm">
                     </div>
 
                     {{-- KATEGORI + KONDISI --}}
@@ -63,11 +61,11 @@
                                 Kategori <span class="text-red-500">*</span>
                             </label>
                             <select name="product_category_id" required
-                                    class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                           focus:border-pink-500 focus:ring-pink-500">
+                                    class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm">
                                 <option value="">-- Pilih kategori --</option>
                                 @foreach ($categories as $cat)
-                                    <option value="{{ $cat->id }}" {{ old('product_category_id') == $cat->id ? 'selected' : '' }}>
+                                    <option value="{{ $cat->id }}"
+                                        {{ old('product_category_id') == $cat->id ? 'selected' : '' }}>
                                         {{ $cat->name }}
                                     </option>
                                 @endforeach
@@ -79,8 +77,7 @@
                                 Kondisi <span class="text-red-500">*</span>
                             </label>
                             <select name="condition" required
-                                    class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                           focus:border-pink-500 focus:ring-pink-500">
+                                    class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm">
                                 <option value="">-- Pilih kondisi --</option>
                                 <option value="new"  {{ old('condition') == 'new' ? 'selected' : '' }}>Baru</option>
                                 <option value="used" {{ old('condition') == 'used' ? 'selected' : '' }}>Bekas</option>
@@ -96,9 +93,8 @@
                             </label>
                             <input type="number" name="price" required min="0"
                                    value="{{ old('price') }}"
-                                   placeholder="Contoh: 150000"
-                                   class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                          focus:border-pink-500 focus:ring-pink-500">
+                                   placeholder="150000"
+                                   class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm">
                         </div>
 
                         <div>
@@ -107,9 +103,8 @@
                             </label>
                             <input type="number" name="stock" required min="0"
                                    value="{{ old('stock') }}"
-                                   placeholder="Contoh: 10"
-                                   class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                          focus:border-pink-500 focus:ring-pink-500">
+                                   placeholder="10"
+                                   class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm">
                         </div>
 
                         <div>
@@ -118,9 +113,8 @@
                             </label>
                             <input type="number" name="weight" required min="0"
                                    value="{{ old('weight') }}"
-                                   placeholder="Contoh: 500"
-                                   class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                          focus:border-pink-500 focus:ring-pink-500">
+                                   placeholder="500"
+                                   class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm">
                         </div>
                     </div>
 
@@ -130,9 +124,8 @@
                             Deskripsi <span class="text-red-500">*</span>
                         </label>
                         <textarea name="description" rows="4" required
-                                  placeholder="Tulis deskripsi singkat produk..."
-                                  class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm
-                                         focus:border-pink-500 focus:ring-pink-500">{{ old('description') }}</textarea>
+                                  placeholder="Tulis deskripsi produk..."
+                                  class="w-full rounded-xl border-gray-200 bg-gray-50 px-3 py-2.5 text-sm">{{ old('description') }}</textarea>
                     </div>
 
                     {{-- FOTO --}}
@@ -140,26 +133,33 @@
                         <label class="block text-sm font-semibold text-gray-700 mb-1">
                             Foto Produk
                         </label>
-                        <input type="file" name="images[]" multiple accept="image/*"
+                        <input type="file" name="image[]" multiple accept="image/*"
                                class="w-full text-sm rounded-xl border-gray-200 bg-gray-50
-                                      focus:border-pink-500 focus:ring-pink-500
-                                      file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-sm
-                                      file:font-semibold file:bg-pink-50 file:text-pink-600 hover:file:bg-pink-100">
+                                      file:mr-4 file:py-2.5 file:px-4 file:rounded-full
+                                      file:border-0 file:text-sm file:font-semibold
+                                      file:bg-pink-50 file:text-pink-600 hover:file:bg-pink-100">
                         <p class="mt-1 text-xs text-gray-500">
-                            Anda bisa mengunggah lebih dari satu foto (JPG/PNG).
+                            Anda bisa mengunggah lebih dari satu foto (JPG/PNG/WebP). Boleh dikosongkan.
                         </p>
+
+                        @error('image')
+                            <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
+                        @error('image.*')
+                            <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    {{-- TOMBOL --}}
-                    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                    {{-- BUTTON --}}
+                    <div class="flex flex-col sm:flex-row gap-3 pt-4">
                         <button type="submit"
-                                class="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-sm font-semibold
-                                       text-white bg-pink-600 hover:bg-pink-700 shadow-lg shadow-pink-400/30 transition">
+                                class="px-6 py-2.5 rounded-full text-sm font-semibold
+                                       text-white bg-pink-600 hover:bg-pink-700 transition">
                             Simpan Produk
                         </button>
 
                         <a href="{{ route('seller.products.index') }}"
-                           class="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-sm font-semibold
+                           class="px-6 py-2.5 rounded-full text-sm font-semibold
                                   text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 transition">
                             Batalkan
                         </a>
@@ -171,4 +171,5 @@
 
     </div>
 </div>
+
 @endsection

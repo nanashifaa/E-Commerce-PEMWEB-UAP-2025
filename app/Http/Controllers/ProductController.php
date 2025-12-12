@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
 
 class ProductController extends Controller
 {
@@ -32,12 +33,7 @@ class ProductController extends Controller
     public function sellerIndex()
     {
         $store = auth()->user()->store;
-
-        if (!$store) {
-            $products = collect();
-        } else {
-            $products = $store->products()->latest()->get();
-        }
+        $products = $store ? $store->products()->latest()->get() : collect();
 
         return view('seller.products.index', compact('products'));
     }
@@ -55,8 +51,8 @@ class ProductController extends Controller
             'store',
             'productReviews.user'
         ])
-            ->where('slug', $slug)
-            ->firstOrFail();
+        ->where('slug', $slug)
+        ->firstOrFail();
 
         return view('product.show', compact('product'));
     }
@@ -79,15 +75,32 @@ class ProductController extends Controller
     */
     public function store(Request $request)
     {
+        // validasi field produk (tanpa foto dulu)
         $request->validate([
             'name'                => 'required|string|max:255',
             'product_category_id' => 'required|exists:product_categories,id',
             'description'         => 'required',
             'price'               => 'required|numeric|min:1',
             'stock'               => 'required|integer|min:1',
-            'condition'           => 'required|in:new,second',
+            'condition'           => 'required|in:new,used',
             'weight'              => 'required|integer|min:1',
         ]);
+
+        // ambil file & filter aman (hindari image[0] = {})
+        $files = $request->file('image');
+        if (is_array($files)) {
+            $files = array_values(array_filter($files, fn ($f) => $f instanceof UploadedFile));
+        } else {
+            $files = [];
+        }
+
+        // validasi foto hanya kalau ada file beneran
+        if (!empty($files)) {
+            $request->validate([
+                'image'   => 'array',
+                'image.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            ]);
+        }
 
         $product = Product::create([
             'store_id'            => auth()->user()->store->id,
@@ -100,6 +113,17 @@ class ProductController extends Controller
             'condition'           => $request->condition,
             'weight'              => $request->weight,
         ]);
+
+        // simpan foto (kalau ada)
+        foreach ($files as $file) {
+            if (!$file->isValid()) continue;
+
+            $path = $file->store('products', 'public');
+
+            $product->productImages()->create([
+                'image' => $path, // sesuai DB
+            ]);
+        }
 
         return redirect()
             ->route('seller.products.index')
@@ -132,16 +156,18 @@ class ProductController extends Controller
             abort(403);
         }
 
+        // validasi field produk (tanpa foto dulu)
         $request->validate([
             'name'                => 'required|string|max:255',
             'product_category_id' => 'required|exists:product_categories,id',
             'description'         => 'required',
             'price'               => 'required|numeric|min:1',
             'stock'               => 'required|integer|min:1',
-            'condition'           => 'required|in:new,second',
+            'condition'           => 'required|in:new,used',
             'weight'              => 'required|integer|min:1',
         ]);
 
+        // update data produk
         $product->update([
             'product_category_id' => $request->product_category_id,
             'name'                => $request->name,
@@ -152,6 +178,32 @@ class ProductController extends Controller
             'condition'           => $request->condition,
             'weight'              => $request->weight,
         ]);
+
+        // ambil file & filter aman
+        $files = $request->file('image');
+        if (is_array($files)) {
+            $files = array_values(array_filter($files, fn ($f) => $f instanceof UploadedFile));
+        } else {
+            $files = [];
+        }
+
+        // validasi foto hanya kalau ada file beneran
+        if (!empty($files)) {
+            $request->validate([
+                'image'   => 'array',
+                'image.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            ]);
+
+            foreach ($files as $file) {
+                if (!$file->isValid()) continue;
+
+                $path = $file->store('products', 'public');
+
+                $product->productImages()->create([
+                    'image' => $path,
+                ]);
+            }
+        }
 
         return redirect()
             ->route('seller.products.index')

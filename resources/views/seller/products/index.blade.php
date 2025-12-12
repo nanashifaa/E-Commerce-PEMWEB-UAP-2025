@@ -41,12 +41,12 @@
                             @php
                                 $firstImage = $p->productImages->first();
                                 $imageUrl = $firstImage
-                                    ? asset('storage/' . $firstImage->image_path)
-                                    : 'https://cdn-icons-png.flaticon.com/512/679/679720.png'; // BOX ICON default
+                                    ? asset('storage/' . $firstImage->image)
+                                    : asset('images/no-image.png'); // ganti jika mau
                             @endphp
 
                             <tr class="hover:bg-gray-50 transition-colors duration-200">
-                                {{-- PRODUCT (IMAGE + NAME) --}}
+                                {{-- PRODUCT --}}
                                 <td class="py-4 px-6 align-middle">
                                     <div class="flex items-center gap-4">
                                         <div class="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 shadow-sm border border-gray-200">
@@ -119,10 +119,10 @@
                 </table>
             </div>
 
-            {{-- PAGINATION (kalau pakai paginate) --}}
+            {{-- PAGINATION --}}
             @if(method_exists($products, 'hasPages') && $products->hasPages())
                 <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/70">
-                    {{ $products->appends(request()->query())->links() }}
+                    {{ $products->links() }}
                 </div>
             @endif
         </div>
@@ -133,27 +133,26 @@
 @endsection
 
 @push('scripts')
-    {{-- SWEETALERT DELETE CONFIRM --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll(".delete-btn").forEach(btn => {
-                btn.addEventListener("click", function() {
-                    Swal.fire({
-                        title: "Delete this product?",
-                        text: "This action cannot be undone!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#e11d48",
-                        cancelButtonColor: "#6b7280",
-                        confirmButtonText: "Yes, delete"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            this.closest(".delete-form").submit();
-                        }
-                    });
-                });
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            Swal.fire({
+                title: "Delete this product?",
+                text: "This action cannot be undone!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#e11d48",
+                cancelButtonColor: "#6b7280",
+                confirmButtonText: "Yes, delete"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.closest(".delete-form").submit();
+                }
             });
         });
-    </script>
+    });
+});
+</script>
 @endpush
