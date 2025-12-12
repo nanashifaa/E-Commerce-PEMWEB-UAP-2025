@@ -9,31 +9,35 @@ class OrderController extends Controller
 {
     public function index()
     {
-        // ambil store milik seller yang login
         $user = auth()->user();
 
         if (!$user->store) {
-            return redirect()->route('store.register')->with('error', 'Silakan buat toko terlebih dahulu.');
+            return redirect()
+                ->route('store.register')
+                ->with('error', 'Silakan buat toko terlebih dahulu.');
         }
 
         $storeId = $user->store->id;
 
-        // ambil transaksi berdasarkan store_id
-        $orders = Order::where('store_id', $storeId)
+        $orders = Order::with('buyer')
+            ->where('store_id', $storeId)
             ->latest()
-            ->get();
+            ->get(); 
 
         return view('seller.orders.index', compact('orders'));
     }
 
     public function show($id)
     {
-        $order = Order::with(['items.product', 'buyer'])->findOrFail($id);
+        $user = auth()->user();
 
-        // Ensure the order belongs to the seller's store
-        if ($order->store_id !== auth()->user()->store->id) {
-            abort(403, 'Unauthorized action.');
+        if (!$user->store) {
+            abort(403, 'You do not have a store.');
         }
+
+        $order = Order::with(['details.product', 'buyer'])
+            ->where('store_id', $user->store->id)
+            ->findOrFail($id);
 
         return view('seller.orders.show', compact('order'));
     }

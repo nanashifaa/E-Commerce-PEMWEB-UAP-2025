@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\WalletTopup;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class WalletController extends Controller
 {
@@ -37,7 +36,7 @@ class WalletController extends Controller
             return back()->withErrors("Kode VA salah.");
         }
 
-        if ($request->amount != $transaction->grand_total) {
+        if ((float)$request->amount !== (float)$transaction->grand_total) {
             return back()->withErrors("Nominal pembayaran tidak sesuai.");
         }
 
@@ -50,14 +49,19 @@ class WalletController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | TOPUP SALDO E-WALLET
+    | TOPUP SALDO E-WALLET (MEMBER)
     |--------------------------------------------------------------------------
     */
 
     // FORM TOPUP
     public function topup()
     {
-        return view('wallet.topup');
+        $user = auth()->user();
+
+        // ✅ biar blade kamu bisa pakai $wallet->balance
+        return view('wallet.topup', [
+            'wallet' => $user
+        ]);
     }
 
     // PROSES TOPUP → Generate VA unik
@@ -91,20 +95,30 @@ class WalletController extends Controller
     // KONFIRMASI TOPUP (AUTO PAID)
     public function confirmTopup(WalletTopup $topup)
     {
-        if ($topup->status !== 'pending') {
-            return back()->with('error', 'Topup sudah diproses sebelumnya.');
+        // ✅ pastikan topup milik user yg login
+        if ($topup->user_id !== auth()->id()) {
+            abort(403, 'Akses ditolak.');
         }
 
-        // Update status
+        if ($topup->status !== 'pending') {
+            return redirect()->route('wallet.topup')->with('success', 'Top up sudah diproses sebelumnya.');
+        }
+
+        // Update status topup
         $topup->update([
             'status' => 'paid',
         ]);
 
+        // ✅ Refresh user biar ambil saldo terbaru dari DB
+        $user = $topup->user()->first();
+
         // Tambahkan saldo user
-        $topup->user->update([
-            'balance' => ($topup->user->balance ?? 0) + $topup->amount
+        $user->update([
+            'balance' => ((float)($user->balance ?? 0)) + ((float)$topup->amount),
         ]);
 
-        return back()->with('success', 'Topup berhasil dikonfirmasi & saldo sudah masuk.');
+        // ✅ Redirect ke halaman topup biar saldo langsung kelihatan
+        return redirect()->route('wallet.topup')
+            ->with('success', 'Top up berhasil dikonfirmasi & saldo sudah masuk.');
     }
 }

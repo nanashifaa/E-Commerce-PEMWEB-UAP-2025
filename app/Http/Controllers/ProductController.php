@@ -10,26 +10,52 @@ use Illuminate\Support\Str;
 class ProductController extends Controller
 {
     /*
-    |----------------------------------------------------------------------
-    | INDEX — LIST PRODUK SELLER
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | INDEX — LIST PRODUK UNTUK PEMBELI
+    |--------------------------------------------------------------------------
     */
-    public function index()
-{
-    $store = auth()->user()->store;
+    public function index(Request $request)
+    {
+        $query = $request->input('q');
 
-    if (!$store) {
-        $products = collect(); 
-    } else {
-        $products = $store->products()->latest()->get();
+        $products = Product::with(['productImages', 'store', 'productCategory'])
+            ->when($query, function ($q) use ($query) {
+                $q->where(function($qq) use ($query) {
+                    $qq->where('name', 'LIKE', "%{$query}%")
+                       ->orWhere('description', 'LIKE', "%{$query}%");
+                });
+            })
+            ->where('stock', '>', 0)
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
+        // view pembeli (kamu bisa pakai products.index sesuai yang tadi aku buat)
+        return view('products.index', compact('products', 'query'));
     }
 
-    return view('seller.products.index', compact('products'));
-}
     /*
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | SELLER INDEX — LIST PRODUK SELLER
+    |--------------------------------------------------------------------------
+    */
+    public function sellerIndex()
+    {
+        $store = auth()->user()->store;
+
+        if (!$store) {
+            $products = collect();
+        } else {
+            $products = $store->products()->latest()->get();
+        }
+
+        return view('seller.products.index', compact('products'));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | SHOW — DETAIL PRODUK UNTUK PEMBELI
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
     */
     public function show($slug)
     {
@@ -46,9 +72,9 @@ class ProductController extends Controller
     }
 
     /*
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
     | CREATE — FORM TAMBAH PRODUK (SELLER)
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
     */
     public function create()
     {
@@ -58,9 +84,9 @@ class ProductController extends Controller
     }
 
     /*
-    |----------------------------------------------------------------------
-    | STORE — SIMPAN PRODUK BARU
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | STORE — SIMPAN PRODUK BARU (SELLER)
+    |--------------------------------------------------------------------------
     */
     public function store(Request $request)
     {
@@ -92,9 +118,9 @@ class ProductController extends Controller
     }
 
     /*
-    |----------------------------------------------------------------------
-    | EDIT — FORM EDIT PRODUK
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | EDIT — FORM EDIT PRODUK (SELLER)
+    |--------------------------------------------------------------------------
     */
     public function edit(Product $product)
     {
@@ -108,9 +134,9 @@ class ProductController extends Controller
     }
 
     /*
-    |----------------------------------------------------------------------
-    | UPDATE — UPDATE PRODUK
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | UPDATE — UPDATE PRODUK (SELLER)
+    |--------------------------------------------------------------------------
     */
     public function update(Request $request, Product $product)
     {
@@ -145,9 +171,9 @@ class ProductController extends Controller
     }
 
     /*
-    |----------------------------------------------------------------------
-    | DESTROY — HAPUS PRODUK
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | DESTROY — HAPUS PRODUK (SELLER)
+    |--------------------------------------------------------------------------
     */
     public function destroy(Product $product)
     {
@@ -161,16 +187,16 @@ class ProductController extends Controller
     }
 
     /*
-    |----------------------------------------------------------------------
-    | SEARCH — PENCARIAN PRODUK UNTUK   PEMBELI
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | SEARCH — PENCARIAN PRODUK UNTUK PEMBELI (opsional, bisa tetap dipakai)
+    |--------------------------------------------------------------------------
     */
     public function search(Request $request)
     {
         $query = $request->input('q');
 
         if (empty($query)) {
-            return redirect('/')->with('info', 'Masukkan kata kunci pencarian');
+            return redirect()->route('home')->with('info', 'Masukkan kata kunci pencarian');
         }
 
         $products = Product::with(['productImages', 'store', 'productCategory'])
@@ -178,9 +204,10 @@ class ProductController extends Controller
                 $q->where('name', 'LIKE', "%{$query}%")
                   ->orWhere('description', 'LIKE', "%{$query}%");
             })
-            ->where('stock', '>', 0) // hanya produk yang ada stocknya
+            ->where('stock', '>', 0)
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         return view('product.search', compact('products', 'query'));
     }
